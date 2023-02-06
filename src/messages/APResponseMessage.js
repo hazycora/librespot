@@ -1,6 +1,6 @@
-const HandshakeMessage = require('./HandshakeMessage')
+import HandshakeMessage from './HandshakeMessage.js'
 
-module.exports = class APResponseMessage extends HandshakeMessage {
+export default class APResponseMessage extends HandshakeMessage {
     constructor () {
         super (
             'keyexchange.proto',

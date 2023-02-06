@@ -1,4 +1,7 @@
-module.exports = {
-    MercuryMessage: require('./MercuryMessage'),
-    MercuryManager: require('./MercuryManager')
+import MercuryManager from './MercuryManager.js'
+import MercuryMessage from './MercuryManager.js'
+
+export default {
+    MercuryManager,
+    MercuryMessage
 }

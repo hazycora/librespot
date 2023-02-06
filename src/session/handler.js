@@ -1,6 +1,6 @@
-const { logger } = require('../utils')
+import logger from '../utils/logger.js'
 
-module.exports = async function ({ cmd, payload, session }) {
+export default async function ({ cmd, payload, session }) {
     switch(cmd) {
         case 0x4:
             // PacketPing
@@ -36,6 +36,11 @@ module.exports = async function ({ cmd, payload, session }) {
         case 0xb5:
             // Mercury
             break
-
+		case 0x0d:
+			session.emit('aes-key', {cmd, payload})
+			break
+		case 0x0e:
+			session.emit('aes-key-error', {cmd, payload})
+			break
     }
 }

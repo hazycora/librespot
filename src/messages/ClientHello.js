@@ -1,13 +1,19 @@
-const Long = require('long')
-const HandshakeMessage = require('./HandshakeMessage')
+import HandshakeMessage from './HandshakeMessage.js'
 
-module.exports = class ClientHello extends HandshakeMessage {
+export default class ClientHello extends HandshakeMessage {
+	product
+	productFlags
+	platform
 
-    constructor () {
+	constructor(options) {
+		options = options??{}
         super (
             'keyexchange.proto',
             'ClientHello'
-        )
+		)
+		this.product = options.product
+		this.productFlags = options.productFlags
+		this.platform = options.platform
     }
 
     fromObject ({ publicKey }) {
@@ -15,12 +21,14 @@ module.exports = class ClientHello extends HandshakeMessage {
         for(let i = 0; i < 16; i++) {
             nonce[i] = Math.floor(Math.random() * 0xFF)
         }
-
         this.payload = {
             buildInfo: {
-                product: this.protoRoot.getEnum('Product').PRODUCT_PARTNER,
-                platform: this.protoRoot.getEnum('Platform').PLATFORM_LINUX_X86,
-                version: Long.fromString('0x10800000000', 16)
+                product: this.product??this.protoRoot.getEnum('Product').PRODUCT_PARTNER,
+                productFlags: this.productFlags??[
+                    this.protoRoot.getEnum('ProductFlags').PRODUCT_FLAG_NONE
+                ],
+                platform: this.platform??this.protoRoot.getEnum('Platform').PLATFORM_LINUX_X86,
+                version: 0x10800000000
             },
             cryptosuitesSupported: [ this.protoRoot.getEnum('Cryptosuite').CRYPTO_SUITE_SHANNON ],
             loginCryptoHello: {

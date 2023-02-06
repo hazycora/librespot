@@ -1,6 +1,6 @@
-const Message = require('./Message')
+import Message from './Message.js'
 
-module.exports = class MercuryHeader extends Message {
+export default class MercuryHeader extends Message {
     constructor () {
         super (
             'mercury.proto',

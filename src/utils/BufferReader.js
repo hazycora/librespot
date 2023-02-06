@@ -1,4 +1,4 @@
-module.exports = function BufferReader (buffer) {
+export default function BufferReader (buffer) {
     let offset = 0
     const reader = {
         readByte () {

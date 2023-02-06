@@ -1,7 +1,10 @@
-const path = require('path')
-const protobuf = require('protobufjs')
+import path from 'path'
+import { fileURLToPath } from 'url'
+import protobuf from 'protobufjs'
 
-module.exports = class Message {
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+export default class Message {
 
     constructor (protoFile, typeName) {
         this.protoFile = protoFile

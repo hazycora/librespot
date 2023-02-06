@@ -1,6 +1,6 @@
-const Message = require('./Message')
+import Message from './Message.js'
 
-module.exports = class HandshakeMessage extends Message {
+export default class HandshakeMessage extends Message {
     constructor (...args) {
         super(...args)
     }

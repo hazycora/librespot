@@ -1,7 +1,7 @@
-const net = require('net')
-const { logger } = require('../utils')
+import net from 'net'
+import logger from '../utils/logger.js'
 
-module.exports = class Client {
+export default class Client {
 
     constructor (address, port) {
         this.address = address
@@ -100,15 +100,10 @@ module.exports = class Client {
         const expectedMac = Buffer.alloc(4)
         shannon.finish(expectedMac)
 
-        // logger.info('mac', mac)
-        // logger.info('expected mac', expectedMac)
-
         if(!expectedMac.equals(mac))
             throw new Error('Received mac mismatch')
 
-        // logger.info('Received:')
         logger.info('cmd: 0x' + cmd.toString(16).toUpperCase())
-        // logger.info('size:', size)
 
         return { cmd, payload }
     }

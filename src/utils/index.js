@@ -1,5 +1,9 @@
-module.exports = {
-    BufferReader: require('./BufferReader'),
-    logger: require('./logger'),
-    web: require('./web')
+import BufferReader from './BufferReader.js'
+import logger from './logger.js'
+import web from './web.js'
+
+export default {
+    BufferReader,
+    logger,
+    web
 }

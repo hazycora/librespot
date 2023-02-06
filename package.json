@@ -1,23 +1,24 @@
 {
-  "name": "spotify-zeroconf",
-  "version": "0.1.4",
-  "description": "Spotify Web API authentication, the easy way.",
-  "main": "src/index.js",
-  "scripts": {},
-  "author": "Julien Elbaz",
+  "name": "librespot",
+  "version": "0.0.1",
+  "description": "A FOSS Spotify library.",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "copy-files": "rm -rf ./build/proto && cp -r ./src/proto ./build/proto",
+    "build": "tsc && npm run copy-files",
+    "postinstall": "npm run build"
+  },
+  "author": "hazycora",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
     "debug": "^4.1.1",
-    "express": "^4.16.4",
-    "long": "^4.0.0",
-    "mdns": "^2.4.0",
     "node-fetch": "^2.3.0",
-    "protobufjs": "^6.8.8",
-    "shannon-bindings": "^0.1.0",
-    "wretch": "^1.4.2"
+    "protobufjs": "^7.2.1",
+    "shannon-bindings": "^0.1.0"
   },
   "devDependencies": {
-    "eslint": "^5.12.0"
+    "@types/node-fetch": "^2.6.2",
+    "typescript": "^4.9.5"
   }
 }

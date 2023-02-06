@@ -1,13 +1,14 @@
-const MercuryMessage = require('./MercuryMessage')
+import MercuryMessage from './MercuryMessage.js'
 
-module.exports = class MercuryManager {
+export default class MercuryManager {
     constructor (session) {
         this.sequence = 0
         this.session = session
         this.callbacks = new Map()
     }
 
-    async send (options, payloads, callback) {
+    async send(options, payloads, callback) {
+        options.uri = encodeURI(options.uri)
         const request = new MercuryMessage(this.sequence++)
         await request.init(options, payloads)
         this.session.sendCommand(0xb2, request.build())

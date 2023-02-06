@@ -1,6 +1,6 @@
-const HandshakeMessage = require('./HandshakeMessage')
+import HandshakeMessage from './HandshakeMessage.js'
 
-module.exports = class ClientResponsePlainText extends HandshakeMessage {
+export default class ClientResponsePlainText extends HandshakeMessage {
     constructor () {
         super (
             'keyexchange.proto',

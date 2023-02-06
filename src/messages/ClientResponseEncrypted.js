@@ -1,6 +1,6 @@
-const Message = require('./Message')
+import Message from './Message.js'
 
-module.exports = class ClientResponseEncrypted extends Message {
+export default class ClientResponseEncrypted extends Message {
     constructor () {
         super (
             'authentication.proto',
@@ -16,12 +16,13 @@ module.exports = class ClientResponseEncrypted extends Message {
                 authData: credentials.auth_data
             },
             systemInfo: {
-                cpuFamily: 0x00,
                 os: 0x00,
+                cpuFamily: 0x00,
                 informationString: 'spotify_js',
                 deviceId: credentials.device_id,
                 versionString: '0.0.1'
-            }
+            },
+            versionString: '0.0.1'
         }
     }
 }

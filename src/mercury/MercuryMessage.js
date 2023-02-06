@@ -1,8 +1,6 @@
-const {
-    MercuryHeader
-} = require('../messages')
+import MercuryHeader from '../messages/MercuryHeader.js'
 
-module.exports = class MercuryMessage {
+export default class MercuryMessage {
     constructor(sequence) {
         this.sequence = sequence
     }

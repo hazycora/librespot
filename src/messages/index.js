@@ -1,11 +1,9 @@
-module.exports = {
-    ClientHello: require('./ClientHello'),
-    APResponseMessage: require('./APResponseMessage'),
-    APWelcome: require('./APWelcome'),
-    APLoginFailed: require('./APLoginFailed'),
-    ClientResponsePlainText: require('./ClientResponsePlainText'),
-    ClientResponseEncrypted: require('./ClientResponseEncrypted'),
-    MercuryHeader: require('./MercuryHeader'),
-    MercuryRequest: require('./MercuryRequest'),
-    MercuryResponse: require('./MercuryResponse')
-}
+export { default as ClientHello } from './ClientHello.js'
+export { default as APResponseMessage } from './APResponseMessage.js'
+export { default as APWelcome } from './APWelcome.js'
+export { default as APLoginFailed } from './APLoginFailed.js'
+export { default as ClientResponsePlainText } from './ClientResponsePlainText.js'
+export { default as ClientResponseEncrypted } from './ClientResponseEncrypted.js'
+export { default as MercuryHeader } from './MercuryHeader.js'
+export { default as MercuryRequest } from './MercuryRequest.js'
+export { default as MercuryResponse } from './MercuryResponse.js'

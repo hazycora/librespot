@@ -1,6 +1,6 @@
-const Message = require('./Message')
+import Message from './Message.js'
 
-module.exports = class APWelcome extends Message {
+export default class APWelcome extends Message {
     constructor () {
         super(
             'authentication.proto',

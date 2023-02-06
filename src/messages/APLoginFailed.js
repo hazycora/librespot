@@ -1,10 +1,12 @@
-const Message = require('./Message')
+import Message from './Message.js'
 
-module.exports = class APLoginFailed extends Message {
+export default class APLoginFailed extends Message {
     constructor () {
         super(
             'keyexchange.proto',
             'APLoginFailed'
         )
+		this.errorDescription = undefined
+		this.errorCode = undefined
     }
 }
