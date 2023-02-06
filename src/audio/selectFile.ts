@@ -39,6 +39,5 @@ export default function (files: spotifyFile[], type: 'vorbis' | 'mp3' | 'aac', m
 	let sorted = filesOfType.sort((a, b): number => {
 		return types[type][b.format]-types[type][a.format]
 	})
-	console.log(sorted)
 	return sorted[0]
 }
