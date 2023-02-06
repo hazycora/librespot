@@ -132,6 +132,32 @@ export default class Librespot {
 		}
 		return resp
 	}
+	
+	async loopNext(url: string): Promise<any[]> {
+		let items = []
+		let resp = await (await this.fetchWithAuth('get', url, {
+			'Accept': 'application/json'
+		})).json()
+		items.push(...resp.items)
+		while (resp.next) {
+			resp = await (await this.fetchWithAuth('get', resp.next, {
+				'Accept': 'application/json'
+			})).json()
+			items.push(...resp.items)
+		}
+		return items
+	}
+	
+	async getArtistMetadata(artistId: string): Promise<SpotifyPodcast> {
+		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/artists/${artistId}`, {
+			'Accept': 'application/json'
+		})
+		return await resp.json()
+	}
+	
+	async getArtistAlbums(artistId: string): Promise<SpotifyAlbum[]> {
+		return (await this.loopNext(`https://api.spotify.com/v1/artists/${artistId}/albums`)).map(parseAlbum)
+	}
 
 	async getPodcastMetadata(showId: string): Promise<SpotifyPodcast> {
 		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/shows/${showId}`, {
@@ -162,18 +188,7 @@ export default class Librespot {
 	}
 
 	async getPlaylistTracks(albumId: string): Promise<SpotifyTrack[]> {
-		let tracks = []
-		let resp = await (await this.fetchWithAuth('get', `https://api.spotify.com/v1/playlists/${albumId}/tracks`, {
-			'Accept': 'application/json'
-		})).json()
-		tracks.push(...resp.items)
-		while (resp.next) {
-			resp = await (await this.fetchWithAuth('get', resp.next, {
-				'Accept': 'application/json'
-			})).json()
-			tracks.push(...resp.items)
-		}
-		return tracks.map(parsePlaylistTrack)
+		return (await this.loopNext(`https://api.spotify.com/v1/playlists/${albumId}/tracks`)).map(parsePlaylistTrack)
 	}
 
 	async getAlbumMetadata(albumId: string): Promise<SpotifyAlbum> {
@@ -184,18 +199,7 @@ export default class Librespot {
 	}
 
 	async getAlbumTracks(albumId: string): Promise<SpotifyTrack[]> {
-		let tracks = []
-		let resp = await (await this.fetchWithAuth('get', `https://api.spotify.com/v1/albums/${albumId}/tracks`, {
-			'Accept': 'application/json'
-		})).json()
-		tracks.push(...resp.items)
-		while (resp.next) {
-			resp = await (await this.fetchWithAuth('get', resp.next, {
-				'Accept': 'application/json'
-			})).json()
-			tracks.push(...resp.items)
-		}
-		return tracks.map(parseTrack)
+		return (await this.loopNext(`https://api.spotify.com/v1/albums/${albumId}/tracks`)).map(parsePlaylistTrack)
 	}
 
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {

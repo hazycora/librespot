@@ -8,12 +8,16 @@ export function parseAccount(e: any): SpotifyAccount {
 }
 
 export function parseArtist(e: any): SpotifyArtist {
-	return {
+	let artist: SpotifyArtist = {
 		name: e.name,
 		id: e.id,
 		uri: e.uri,
 		externalUrl: e.external_urls.spotify
 	}
+	if (e.followers) artist.followerCount = e.followers.total
+	if (e.genres) artist.genres = e.genres
+	if (e.images) artist.avatar = e.images
+	return artist
 }
 
 export function parseTrack(e: any): SpotifyTrack {

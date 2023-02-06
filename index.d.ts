@@ -36,6 +36,9 @@ interface LibrespotStreamAndMetadata extends LibrespotStream {
 
 interface SpotifyArtist {
 	name: string
+	avatar?: SpotifyThumbnail[]
+	genres?: string[]
+	followerCount?: number
 	id: string
 	uri: string
 	externalUrl: string
