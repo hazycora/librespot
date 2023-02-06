@@ -267,7 +267,7 @@ export default class Librespot {
 	}
 
 	async getAlbumTracks(albumId: string): Promise<SpotifyTrack[]> {
-		return (await this.loopNext(`https://api.spotify.com/v1/albums/${albumId}/tracks`)).map(parsePlaylistTrack)
+		return (await this.loopNext(`https://api.spotify.com/v1/albums/${albumId}/tracks`)).map(parseTrack)
 	}
 
 	async getAlbum(albumId: string): Promise<SpotifyAlbum> {
