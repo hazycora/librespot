@@ -2,7 +2,6 @@
   "include": [
     "src/**/*"
   ],
-  "assets":["src/proto/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {
     "moduleResolution": "node",
