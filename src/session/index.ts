@@ -44,7 +44,7 @@ export interface LibrespotSessionOptions {
 export default class LibrespotSession extends EventEmitter {
 	address: string
 	port: number
-	diffie: crypto.DiffieHellman
+	diffie: crypto.DiffieHellmanGroup
 	client: Client
 	send: ShannonObject
 	recv: ShannonObject
