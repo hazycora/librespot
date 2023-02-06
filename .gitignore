@@ -1,6 +1,14 @@
+# dependencies
 /node_modules
-/credentials.json
+
+# build
 /build
+
+# Testing files
 /test.js
+test.ogg
+
+# Credentials
+/credentials.json
 .env
 .env.*
