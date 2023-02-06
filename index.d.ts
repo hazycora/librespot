@@ -39,6 +39,7 @@ interface SpotifyArtist {
 	avatar?: SpotifyThumbnail[]
 	genres?: string[]
 	followerCount?: number
+	albums?: SpotifyAlbum[]
 	id: string
 	uri: string
 	externalUrl: string

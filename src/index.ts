@@ -159,6 +159,17 @@ export default class Librespot {
 		return (await this.loopNext(`https://api.spotify.com/v1/artists/${artistId}/albums`)).map(parseAlbum)
 	}
 
+	async getArtist(episodeId: string): Promise<SpotifyArtist> {
+		const [artistMetadata, artistAlbums] = await Promise.all([
+			this.getArtistMetadata(episodeId),
+			this.getArtistAlbums(episodeId)
+		])
+		return {
+			...artistMetadata,
+			albums: artistAlbums
+		}
+	}
+
 	async getPodcastMetadata(showId: string): Promise<SpotifyPodcast> {
 		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/shows/${showId}`, {
 			'Accept': 'application/json'
@@ -282,10 +293,11 @@ export default class Librespot {
 		}
 	}
 
-	getUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
+	getUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
 		let uriParts = spotifyUri.split(':')
 		if (uriParts[0]!='spotify') throw new Error('Invalid Spotify URI')
 		switch (uriParts[1]) {
+			case 'artist': return this.getArtist(uriParts[2])
 			case 'track': return this.getTrack(uriParts[2], maxQuality)
 			case 'episode': return this.getEpisode(uriParts[2], maxQuality)
 			case 'album': return this.getAlbumMetadata(uriParts[2])
