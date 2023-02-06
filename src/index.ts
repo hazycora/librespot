@@ -147,6 +147,30 @@ export default class Librespot {
 		}
 		return items
 	}
+
+	async getSearch(query: string, types?: SpotifyTypes[]): Promise<SpotifySearch> {
+		types = types??[
+			'artist',
+			'album',
+			'track',
+			'playlist',
+			'show',
+			'episode'
+		]
+		let url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=${encodeURIComponent(types.join(','))}`
+		const resp = await this.fetchWithAuth('get', url, {
+			'Accept': 'application/json'
+		})
+		const results = await resp.json()
+		return {
+			artists: results.artists.items.map(parseArtist),
+			albums: results.albums.items.map(parseAlbum),
+			tracks: results.tracks.items.map(parseTrack),
+			playlists: results.playlists.items.map(parsePlaylist),
+			podcasts: results.shows.items.map(parsePodcast),
+			episodes: results.episodes.items.map(parseEpisode)
+		}
+	}
 	
 	async getArtistMetadata(artistId: string): Promise<SpotifyArtist> {
 		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/artists/${artistId}`, {

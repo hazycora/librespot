@@ -110,7 +110,7 @@ export function parsePodcast(e: any): SpotifyPodcast {
 		mediaType: e.media_type,
 		coverArtwork: e.images,
 		publisher: e.publisher,
-		episodes: e.episodes.items.map(parseEpisode),
+		episodes: e.episodes?.items.map(parseEpisode),
 		totalEpisodes: e.total_episodes,
 		id: e.id,
 		uri: e.uri,

@@ -1,5 +1,7 @@
 type QualityOption = 0|1|2
 
+type SpotifyTypes = 'artist'|'album'|'track'|'playlist'|'show'|'episode'
+
 interface HandshakeOptions {
 	product?: number
 	productFlags?: number[]
@@ -61,6 +63,15 @@ interface SpotifyUser {
 	externalUrl: string
 }
 
+interface SpotifySearch {
+	artists: SpotifyArtist[]
+	albums: SpotifyAlbum[]
+	tracks: SpotifyTrack[]
+	playlists: SpotifyPlaylist[]
+	podcasts: SpotifyPodcast[]
+	episodes: SpotifyEpisode[]
+}
+
 interface SpotifyTrack {
 	album?: SpotifyAlbum
 	artists: SpotifyArtist[]
@@ -117,7 +128,7 @@ interface SpotifyPodcast {
 	mediaType: string
 	coverArtwork: SpotifyThumbnail[]
 	publisher: string
-	episodes: SpotifyEpisode[]
+	episodes?: SpotifyEpisode[]
 	totalEpisodes: number
 	id: string
 	uri: string
