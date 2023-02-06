@@ -1,7 +1,6 @@
 import LibrespotSession, { LibrespotSessionOptions } from './session/index.js'
 import { getRandomAP } from './utils/getService.js'
 import logger from './utils/logger.js'
-import { randomBytes } from 'crypto'
 
 export { MakeLibrespotSessionOptions, LibrespotSession }
 
