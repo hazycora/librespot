@@ -5,7 +5,7 @@ import base62toHex from './utils/base62tohex.js'
 import LibrespotSession from './session/index.js'
 import { randomBytes } from 'crypto'
 import { Readable } from 'stream'
-import { parseSpotifyAlbum, parseSpotifyTrack } from './utils/parse.js'
+import { parseAlbum, parsePlaylist, parseTrack } from './utils/parse.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -126,14 +126,21 @@ export default class Librespot {
 		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/tracks/${trackId}`, {
 			'Accept': 'application/json'
 		})
-		return parseSpotifyTrack(await resp.json())
+		return parseTrack(await resp.json())
+	}
+
+	async getPlaylistMetadata(playlistId: string): Promise<SpotifyPlaylist> {
+		let resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/playlists/${playlistId}`, {
+			'Accept': 'application/json'
+		})
+		return parsePlaylist(await resp.json())
 	}
 
 	async getAlbumMetadata(albumId: string): Promise<SpotifyAlbum> {
 		let resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/albums/${albumId}`, {
 			'Accept': 'application/json'
 		})
-		return parseSpotifyAlbum(await resp.json())
+		return parseAlbum(await resp.json())
 	}
 
 	async getAlbumTracks(albumId: string): Promise<SpotifyTrack[]> {
@@ -148,7 +155,7 @@ export default class Librespot {
 			})).json()
 			tracks.push(...resp.items)
 		}
-		return tracks.map(parseSpotifyTrack)
+		return tracks.map(parseTrack)
 	}
 
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
