@@ -73,3 +73,40 @@ export function parsePlaylist(e: any): SpotifyPlaylist {
 		externalUrl: e.external_urls.spotify
 	}
 }
+
+export function parseEpisode(e: any): SpotifyEpisode {
+	return {
+		name: e.name,
+		description: e.description,
+		htmlDescription: e.html_description,
+		explicit: e.explicit,
+		language: e.language,
+		languages: e.languages,
+		coverArtwork: e.images,
+		durationMs: e.duration_ms,
+		isPlayable: e.is_playable,
+		isPaywalled: e.is_paywall_content,
+		releaseDate: new Date(e.release_date),
+		id: e.id,
+		uri: e.uri,
+		externalUrl: e.external_urls.spotify
+	}
+}
+
+export function parsePodcast(e: any): SpotifyPodcast {
+	return {
+		name: e.name,
+		description: e.description,
+		htmlDescription: e.html_description,
+		explicit: e.explicit,
+		languages: e.languages,
+		mediaType: e.media_type,
+		coverArtwork: e.images,
+		publisher: e.publisher,
+		episodes: e.episodes.items.map(parseEpisode),
+		totalEpisodes: e.total_episodes,
+		id: e.id,
+		uri: e.uri,
+		externalUrl: e.external_urls.spotify
+	}
+}

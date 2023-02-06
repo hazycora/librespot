@@ -89,3 +89,36 @@ interface SpotifyPlaylist {
 	uri: string
 	externalUrl: string
 }
+
+interface SpotifyPodcast {
+	name: string
+	description: string
+	htmlDescription: string
+	explicit: boolean
+	languages: string[]
+	mediaType: string
+	coverArtwork: SpotifyThumbnail[]
+	publisher: string
+	episodes: SpotifyEpisode[]
+	totalEpisodes: number
+	id: string
+	uri: string
+	externalUrl: string
+}
+
+interface SpotifyEpisode {
+	description: string
+	htmlDescription: string
+	durationMs: number
+	explicit: boolean
+	name: string
+	isPlayable: boolean
+	isPaywalled: boolean
+	releaseDate: Date
+	coverArtwork: SpotifyThumbnail[]
+	language: string
+	languages: string[]
+	id: string
+	uri: string
+	externalUrl: string
+}
