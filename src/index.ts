@@ -56,6 +56,7 @@ export default class Librespot {
 	spclient: string
 	keySequence: number
 	sessionOptions: LibrespotSessionOptions
+	maxQuality: 0|1|2
 
 	constructor(options: LibrespotOptions) {
 		options = {
@@ -67,6 +68,7 @@ export default class Librespot {
 		this.session = null
 		this.deviceId = randomBytes(20).toString('hex')
 		this.options = options
+		this.maxQuality = 1
 
 		this.sessionOptions = options.sessionOptions ?? {
 			deviceId: this.deviceId
@@ -84,6 +86,7 @@ export default class Librespot {
 		this.session = new LibrespotSession(this.sessionOptions)
 		await this.session.setup(username, password)
 		this.token = await this.getToken(this.options.scopes)
+		if (this.isPremium()) this.maxQuality = 2
 	}
 	
 	async relogin() {
@@ -220,7 +223,7 @@ export default class Librespot {
 		})).json()
 		const resp = await this.fetchWithAuth(
 			'get',
-			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.file, 'vorbis', maxQuality??1).file_id}?alt=json`, {
+			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.file, 'vorbis', maxQuality??this.maxQuality).file_id}?alt=json`, {
 			"Accept": 'application/json'
 		})
 		const data = await resp.json()
@@ -240,7 +243,7 @@ export default class Librespot {
 		})).json()
 		const resp = await this.fetchWithAuth(
 			'get',
-			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.audio, 'vorbis', maxQuality??1).file_id}?alt=json`, {
+			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.audio, 'vorbis', maxQuality??this.maxQuality).file_id}?alt=json`, {
 			"Accept": 'application/json'
 		})
 		const data = await resp.json()
