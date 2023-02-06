@@ -94,8 +94,12 @@ export default class Librespot {
 		return this.session.close()
 	}
 
+	getAttribute(attribute: string): string|number {
+		return this.session.attributes[attribute]
+	}
+
 	isPremium() {
-		return this.session.attributes.type=='premium'
+		return this.getAttribute('type')=='premium'
 	}
 
 	async getToken(scopes: string[]): Promise<LibrespotToken> {
