@@ -74,7 +74,7 @@ interface SpotifySearch {
 
 interface SpotifyTrack {
 	album?: SpotifyAlbum
-	artists: SpotifyArtist[]
+	artists?: SpotifyArtist[]
 	discNumber?: number
 	trackNumber: number
 	durationMs: number

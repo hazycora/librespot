@@ -25,7 +25,6 @@ export function parseArtist(e: any): SpotifyArtist {
 
 export function parseTrack(e: any): SpotifyTrack {
 	let track: SpotifyTrack = {
-		artists: e.artists.map(parseArtist),
 		discNumber: e.disc_number,
 		trackNumber: e.track_number,
 		durationMs: e.duration_ms,
@@ -36,6 +35,7 @@ export function parseTrack(e: any): SpotifyTrack {
 		name: e.name,
 		externalUrl: e.external_urls.spotify,
 	}
+	if (e.artists) track.artists = e.artists.map(parseArtist)
 	if (e.album) track.album = parseAlbum(e.album)
 	return track
 }
