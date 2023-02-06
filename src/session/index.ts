@@ -42,6 +42,7 @@ export default class LibrespotSession extends EventEmitter {
 	handshakeOptions?: HandshakeOptions
 	setupComplete: boolean
 	deviceId: string
+	attributes: {[key:string]:string|number}
 
 	constructor(options: LibrespotSessionOptions) {
 		super()

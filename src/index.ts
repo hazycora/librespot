@@ -94,6 +94,10 @@ export default class Librespot {
 		return this.session.close()
 	}
 
+	isPremium() {
+		return this.session.attributes.type=='premium'
+	}
+
 	async getToken(scopes: string[]): Promise<LibrespotToken> {
 		if (this.token && !this.token.isExpired()) {
 			if (this.token.scopes.every(scope => scopes.includes(scope))) {

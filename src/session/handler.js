@@ -1,3 +1,4 @@
+import { XMLParser } from 'fast-xml-parser'
 import logger from '../utils/logger.js'
 
 export default async function ({ cmd, payload, session }) {
@@ -31,6 +32,15 @@ export default async function ({ cmd, payload, session }) {
             callback({ header: message.header.payload, payloads: message.payloads })
             break
         }
+		case 0x50:
+			const parser = new XMLParser()
+			let jObj = parser.parse(payload.toString())
+			let newAttributes = jObj.products.product
+			session.attributes = {
+				...session.attributes,
+				...newAttributes
+			}
+			break
         case 0xb3:
         case 0xb4:
         case 0xb5:
