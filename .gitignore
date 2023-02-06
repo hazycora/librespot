@@ -2,3 +2,5 @@
 /credentials.json
 /build
 /test.js
+.env
+.env.*
