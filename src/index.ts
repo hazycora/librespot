@@ -133,17 +133,20 @@ export default class Librespot {
 		return resp
 	}
 	
-	async loopNext(url: string): Promise<any[]> {
+	async loopNext(url: string, maxPages?: number): Promise<any[]> {
+		maxPages = maxPages??Infinity
 		let items = []
 		let resp = await (await this.fetchWithAuth('get', url, {
 			'Accept': 'application/json'
 		})).json()
 		items.push(...resp.items)
-		while (resp.next) {
+		let pageCount = 1
+		while (resp.next&&pageCount<maxPages) {
 			resp = await (await this.fetchWithAuth('get', resp.next, {
 				'Accept': 'application/json'
 			})).json()
 			items.push(...resp.items)
+			pageCount += 1
 		}
 		return items
 	}
@@ -179,14 +182,14 @@ export default class Librespot {
 		return parseArtist(await resp.json())
 	}
 	
-	async getArtistAlbums(artistId: string): Promise<SpotifyAlbum[]> {
-		return (await this.loopNext(`https://api.spotify.com/v1/artists/${artistId}/albums`)).map(parseAlbum)
+	async getArtistAlbums(artistId: string, maxPages?: number): Promise<SpotifyAlbum[]> {
+		return (await this.loopNext(`https://api.spotify.com/v1/artists/${artistId}/albums`, maxPages)).map(parseAlbum)
 	}
 
-	async getArtist(episodeId: string): Promise<SpotifyArtist> {
+	async getArtist(episodeId: string, maxPages?: number): Promise<SpotifyArtist> {
 		const [artistMetadata, artistAlbums] = await Promise.all([
 			this.getArtistMetadata(episodeId),
-			this.getArtistAlbums(episodeId)
+			this.getArtistAlbums(episodeId, maxPages)
 		])
 		return {
 			...artistMetadata,
@@ -201,14 +204,14 @@ export default class Librespot {
 		return parseUser(await resp.json())
 	}
 	
-	async getUserPlaylists(userId: string): Promise<SpotifyPlaylist[]> {
-		return (await this.loopNext(`https://api.spotify.com/v1/users/${userId}/playlists`)).map(parsePlaylist)
+	async getUserPlaylists(userId: string, maxPages?: number): Promise<SpotifyPlaylist[]> {
+		return (await this.loopNext(`https://api.spotify.com/v1/users/${userId}/playlists`, maxPages)).map(parsePlaylist)
 	}
 
-	async getUser(userId: string): Promise<SpotifyUser> {
+	async getUser(userId: string, maxPages?: number): Promise<SpotifyUser> {
 		const [userMetadata, userPlaylists] = await Promise.all([
 			this.getUserMetadata(userId),
-			this.getUserPlaylists(userId)
+			this.getUserPlaylists(userId, maxPages)
 		])
 		return {
 			...userMetadata,
@@ -244,14 +247,14 @@ export default class Librespot {
 		return parsePlaylist(await resp.json())
 	}
 
-	async getPlaylistTracks(albumId: string): Promise<SpotifyPlaylistTrack[]> {
-		return (await this.loopNext(`https://api.spotify.com/v1/playlists/${albumId}/tracks`)).map(parsePlaylistTrack)
+	async getPlaylistTracks(albumId: string, maxPages?: number): Promise<SpotifyPlaylistTrack[]> {
+		return (await this.loopNext(`https://api.spotify.com/v1/playlists/${albumId}/tracks`, maxPages)).map(parsePlaylistTrack)
 	}
 
-	async getPlaylist(albumId: string): Promise<SpotifyPlaylist> {
+	async getPlaylist(albumId: string, maxPages?: number): Promise<SpotifyPlaylist> {
 		const [playlistMetadata, playlistTracks] = await Promise.all([
 			this.getPlaylistMetadata(albumId),
-			this.getPlaylistTracks(albumId)
+			this.getPlaylistTracks(albumId, maxPages)
 		])
 		return {
 			...playlistMetadata,
@@ -266,14 +269,14 @@ export default class Librespot {
 		return parseAlbum(await resp.json())
 	}
 
-	async getAlbumTracks(albumId: string): Promise<SpotifyTrack[]> {
-		return (await this.loopNext(`https://api.spotify.com/v1/albums/${albumId}/tracks`)).map(parseTrack)
+	async getAlbumTracks(albumId: string, maxPages?: number): Promise<SpotifyTrack[]> {
+		return (await this.loopNext(`https://api.spotify.com/v1/albums/${albumId}/tracks`, maxPages)).map(parseTrack)
 	}
 
-	async getAlbum(albumId: string): Promise<SpotifyAlbum> {
+	async getAlbum(albumId: string, maxPages?: number): Promise<SpotifyAlbum> {
 		const [albumMetadata, albumTracks] = await Promise.all([
 			this.getAlbumMetadata(albumId),
-			this.getAlbumTracks(albumId)
+			this.getAlbumTracks(albumId, maxPages)
 		])
 		return {
 			...albumMetadata,
@@ -361,16 +364,16 @@ export default class Librespot {
 		}
 	}
 
-	getByUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyUser|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
+	getByUri(spotifyUri: string, max?: QualityOption|number): Promise<LibrespotStreamAndMetadata|SpotifyUser|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
 		let uriParts = spotifyUri.split(':')
 		if (uriParts[0]!='spotify') throw new Error('Invalid Spotify URI')
 		switch (uriParts[1]) {
-			case 'user': return this.getUser(uriParts[2])
-			case 'artist': return this.getArtist(uriParts[2])
-			case 'track': return this.getTrack(uriParts[2], maxQuality)
-			case 'episode': return this.getEpisode(uriParts[2], maxQuality)
-			case 'album': return this.getAlbum(uriParts[2])
-			case 'playlist': return this.getPlaylist(uriParts[2])
+			case 'user': return this.getUser(uriParts[2], max)
+			case 'artist': return this.getArtist(uriParts[2], max)
+			case 'track': return this.getTrack(uriParts[2], <QualityOption>max)
+			case 'episode': return this.getEpisode(uriParts[2], <QualityOption>max)
+			case 'album': return this.getAlbum(uriParts[2], max)
+			case 'playlist': return this.getPlaylist(uriParts[2], max)
 			case 'show': return this.getPodcastMetadata(uriParts[2])
 			default: throw new Error(`Unknown spotify URI ${spotifyUri}`)
 		}
