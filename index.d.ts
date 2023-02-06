@@ -1,3 +1,5 @@
+type QualityOption = 0|1|2
+
 interface HandshakeOptions {
 	product?: number
 	productFlags?: number[]
@@ -21,6 +23,15 @@ interface LibrespotOptions {
 interface LibrespotCredentials {
 	username: string
 	password: string
+}
+
+interface LibrespotStream {
+	sizeBytes: number
+	stream: any
+}
+
+interface LibrespotStreamAndMetadata extends LibrespotStream {
+	metadata: SpotifyTrack | SpotifyEpisode
 }
 
 interface SpotifyArtist {

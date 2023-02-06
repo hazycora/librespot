@@ -5,7 +5,6 @@ import { getRandomSpclient } from './utils/getService.js'
 import base62toHex from './utils/base62tohex.js'
 import LibrespotSession from './session/index.js'
 import { randomBytes } from 'crypto'
-import { Readable } from 'stream'
 import { parseAlbum, parseEpisode, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack } from './utils/parse.js'
 
 const defaultScopes = [
@@ -56,7 +55,7 @@ export default class Librespot {
 	spclient: string
 	keySequence: number
 	sessionOptions: LibrespotSessionOptions
-	maxQuality: 0|1|2
+	maxQuality: QualityOption
 
 	constructor(options: LibrespotOptions) {
 		options = {
@@ -217,7 +216,7 @@ export default class Librespot {
 		})
 	}
 
-	async getTrackStream(trackId: string, maxQuality?: 0|1|2): Promise<{ sizeBytes: number, stream: Readable }> {
+	async getTrackStream(trackId: string, maxQuality?: QualityOption): Promise<LibrespotStream> {
 		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/track/${base62toHex(trackId)}`, {
 			'Accept': 'application/json'
 		})).json()
@@ -237,7 +236,7 @@ export default class Librespot {
 		}
 	}
 
-	async getEpisodeStream(episodeId: string, maxQuality?: 0|1|2): Promise<{ sizeBytes: number, stream: Readable }> {
+	async getEpisodeStream(episodeId: string, maxQuality?: QualityOption): Promise<LibrespotStream> {
 		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/episode/${base62toHex(episodeId)}`, {
 			'Accept': 'application/json'
 		})).json()
@@ -257,9 +256,9 @@ export default class Librespot {
 		}
 	}
 
-	async getTrack(trackId: string): Promise<{ metadata: SpotifyTrack, sizeBytes: number, stream: Readable }> {
+	async getTrack(trackId: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata> {
 		const [trackStream, trackMetadata] = await Promise.all([
-			this.getTrackStream(trackId),
+			this.getTrackStream(trackId, maxQuality),
 			this.getTrackMetadata(trackId)
 		])
 		return {
@@ -268,14 +267,34 @@ export default class Librespot {
 		}
 	}
 
-	async getEpisode(episodeId: string): Promise<{ metadata: SpotifyEpisode, sizeBytes: number, stream: Readable }> {
+	async getEpisode(episodeId: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata> {
 		const [episodeStream, episodeMetadata] = await Promise.all([
-			this.getEpisodeStream(episodeId),
+			this.getEpisodeStream(episodeId, maxQuality),
 			this.getEpisodeMetadata(episodeId)
 		])
 		return {
 			...episodeStream,
 			metadata: episodeMetadata
 		}
+	}
+
+	getUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
+		let uriParts = spotifyUri.split(':')
+		if (uriParts[0]!='spotify') throw new Error('Invalid Spotify URI')
+		switch (uriParts[1]) {
+			case 'track': return this.getTrack(uriParts[2], maxQuality)
+			case 'episode': return this.getEpisode(uriParts[2], maxQuality)
+			case 'album': return this.getAlbumMetadata(uriParts[2])
+			case 'playlist': return this.getPlaylistMetadata(uriParts[2])
+			case 'show': return this.getPodcastMetadata(uriParts[2])
+			default: throw new Error(`Unknown spotify URI ${spotifyUri}`)
+		}
+	}
+
+	getUrl(spotifyUrl: string, maxQuality?: QualityOption) {
+		let urlObj = new URL(spotifyUrl)
+		let parts = urlObj.pathname.slice(1).split('/')
+		if (parts.length > 2) throw new Error('Unknown Spotify URL')
+		return this.getUri(`spotify:${parts[0]}:${parts[1]}`, maxQuality)
 	}
 }
