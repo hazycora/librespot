@@ -237,8 +237,8 @@ export default class Librespot {
 		}
 	}
 
-	async getEpisodeStream(trackId: string, maxQuality?: 0|1|2): Promise<{ sizeBytes: number, stream: Readable }> {
-		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/episode/${base62toHex(trackId)}`, {
+	async getEpisodeStream(episodeId: string, maxQuality?: 0|1|2): Promise<{ sizeBytes: number, stream: Readable }> {
+		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/episode/${base62toHex(episodeId)}`, {
 			'Accept': 'application/json'
 		})).json()
 		const resp = await this.fetchWithAuth(
@@ -265,6 +265,17 @@ export default class Librespot {
 		return {
 			...trackStream,
 			metadata: trackMetadata
+		}
+	}
+
+	async getEpisode(episodeId: string): Promise<{ metadata: SpotifyEpisode, sizeBytes: number, stream: Readable }> {
+		const [episodeStream, episodeMetadata] = await Promise.all([
+			this.getEpisodeStream(episodeId),
+			this.getEpisodeMetadata(episodeId)
+		])
+		return {
+			...episodeStream,
+			metadata: episodeMetadata
 		}
 	}
 }
