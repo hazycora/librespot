@@ -1,10 +1,13 @@
-export function parseAccount(e: any): SpotifyAccount {
-	return {
+export function parseUser(e: any): SpotifyUser {
+	let user: SpotifyUser = {
 		name: e.display_name,
 		id: e.id,
 		uri: e.uri,
 		externalUrl: e.external_urls.spotify
 	}
+	if (e.followers) user.followerCount = e.followers.total
+	if (e.images) user.avatar = e.images
+	return user
 }
 
 export function parseArtist(e: any): SpotifyArtist {
@@ -58,18 +61,18 @@ export function parsePlaylistTrack(e: any): SpotifyPlaylistTrack {
 	return {
 		...parseTrack(e.track),
 		addedAt: new Date(e.added_at),
-		addedBy: parseAccount(e.added_by)
+		addedBy: parseUser(e.added_by)
 	}
 }
 
 export function parsePlaylist(e: any): SpotifyPlaylist {
 	return {
-		owner: parseAccount(e.owner),
+		owner: parseUser(e.owner),
 		name: e.name,
 		description: e.description,
 		collaborative: e.collaborative,
 		onProfile: e.public,
-		tracks: e.tracks.items.map(parsePlaylistTrack),
+		tracks: e.tracks.items?.map(parsePlaylistTrack),
 		totalTracks: e.tracks.total,
 		coverArtwork: e.images,
 		id: e.id,

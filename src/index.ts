@@ -5,7 +5,7 @@ import { getRandomSpclient } from './utils/getService.js'
 import base62toHex from './utils/base62tohex.js'
 import LibrespotSession from './session/index.js'
 import { randomBytes } from 'crypto'
-import { parseAlbum, parseArtist, parseEpisode, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack } from './utils/parse.js'
+import { parseAlbum, parseArtist, parseEpisode, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack, parseUser } from './utils/parse.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -169,6 +169,28 @@ export default class Librespot {
 			albums: artistAlbums
 		}
 	}
+	
+	async getUserMetadata(userId: string): Promise<SpotifyUser> {
+		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/users/${userId}`, {
+			'Accept': 'application/json'
+		})
+		return parseUser(await resp.json())
+	}
+	
+	async getUserPlaylists(userId: string): Promise<SpotifyPlaylist[]> {
+		return (await this.loopNext(`https://api.spotify.com/v1/users/${userId}/playlists`)).map(parsePlaylist)
+	}
+
+	async getUser(userId: string): Promise<SpotifyUser> {
+		const [userMetadata, userPlaylists] = await Promise.all([
+			this.getUserMetadata(userId),
+			this.getUserPlaylists(userId)
+		])
+		return {
+			...userMetadata,
+			playlists: userPlaylists
+		}
+	}
 
 	async getPodcastMetadata(showId: string): Promise<SpotifyPodcast> {
 		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/shows/${showId}`, {
@@ -315,10 +337,11 @@ export default class Librespot {
 		}
 	}
 
-	getByUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
+	getByUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyUser|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
 		let uriParts = spotifyUri.split(':')
 		if (uriParts[0]!='spotify') throw new Error('Invalid Spotify URI')
 		switch (uriParts[1]) {
+			case 'user': return this.getUser(uriParts[2])
 			case 'artist': return this.getArtist(uriParts[2])
 			case 'track': return this.getTrack(uriParts[2], maxQuality)
 			case 'episode': return this.getEpisode(uriParts[2], maxQuality)

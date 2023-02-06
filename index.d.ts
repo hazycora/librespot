@@ -34,6 +34,12 @@ interface LibrespotStreamAndMetadata extends LibrespotStream {
 	metadata: SpotifyTrack | SpotifyEpisode
 }
 
+interface SpotifyThumbnail {
+	height: number|null
+	width: number|null
+	url: string
+}
+
 interface SpotifyArtist {
 	name: string
 	avatar?: SpotifyThumbnail[]
@@ -45,8 +51,11 @@ interface SpotifyArtist {
 	externalUrl: string
 }
 
-interface SpotifyAccount {
+interface SpotifyUser {
 	name?: string
+	followerCount?: number
+	avatar?: SpotifyThumbnail[]
+	playlists?: SpotifyPlaylist[]
 	id: string
 	uri: string
 	externalUrl: string
@@ -66,12 +75,6 @@ interface SpotifyTrack {
 	externalUrl: string
 }
 
-interface SpotifyThumbnail {
-	height: number
-	width: number
-	url: string
-}
-
 interface SpotifyAlbum {
 	albumType: string
 	name: string
@@ -88,7 +91,7 @@ interface SpotifyAlbum {
 
 interface SpotifyPlaylistTrack extends SpotifyTrack {
 	addedAt: Date
-	addedBy: SpotifyAccount
+	addedBy: SpotifyUser
 }
 
 interface SpotifyPlaylist {
@@ -97,7 +100,7 @@ interface SpotifyPlaylist {
 	description: string
 	coverArtwork: SpotifyThumbnail[]
 	name: string
-	owner: SpotifyAccount
+	owner: SpotifyUser
 	tracks?: SpotifyPlaylistTrack[]
 	totalTracks: number
 	id: string
