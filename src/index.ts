@@ -5,7 +5,7 @@ import base62toHex from './utils/base62tohex.js'
 import LibrespotSession from './session/index.js'
 import { randomBytes } from 'crypto'
 import { Readable } from 'stream'
-import { parseAlbum, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack } from './utils/parse.js'
+import { parseAlbum, parseEpisode, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack } from './utils/parse.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -127,6 +127,13 @@ export default class Librespot {
 			'Accept': 'application/json'
 		})
 		return parsePodcast(await resp.json())
+	}
+
+	async getEpisodeMetadata(episodeId: string): Promise<SpotifyEpisode> {
+		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/episodes/${episodeId}`, {
+			'Accept': 'application/json'
+		})
+		return parseEpisode(await resp.json())
 	}
 
 	async getTrackMetadata(trackId: string): Promise<SpotifyTrack> {
