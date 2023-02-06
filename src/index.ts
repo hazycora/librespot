@@ -315,7 +315,7 @@ export default class Librespot {
 		}
 	}
 
-	getUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
+	getByUri(spotifyUri: string, maxQuality?: QualityOption): Promise<LibrespotStreamAndMetadata|SpotifyArtist|SpotifyAlbum|SpotifyPlaylist|SpotifyPodcast> {
 		let uriParts = spotifyUri.split(':')
 		if (uriParts[0]!='spotify') throw new Error('Invalid Spotify URI')
 		switch (uriParts[1]) {
@@ -329,10 +329,10 @@ export default class Librespot {
 		}
 	}
 
-	getUrl(spotifyUrl: string, maxQuality?: QualityOption) {
+	getByUrl(spotifyUrl: string, maxQuality?: QualityOption) {
 		let urlObj = new URL(spotifyUrl)
 		let parts = urlObj.pathname.slice(1).split('/')
 		if (parts.length > 2) throw new Error('Unknown Spotify URL')
-		return this.getUri(`spotify:${parts[0]}:${parts[1]}`, maxQuality)
+		return this.getByUri(`spotify:${parts[0]}:${parts[1]}`, maxQuality)
 	}
 }
