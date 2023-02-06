@@ -2,8 +2,10 @@ import fetch, { Response } from 'node-fetch'
 import audioDecrypt from './audio/decrypt.js'
 import { getRandomSpclient } from './utils/getService.js'
 import base62toHex from './utils/base62tohex.js'
-import LibrespotSession, { LibrespotSessionOptions } from './session/index.js'
+import LibrespotSession from './session/index.js'
 import { randomBytes } from 'crypto'
+import { Readable } from 'stream'
+import { parseSpotifyTrack } from './utils/parse.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -23,18 +25,6 @@ const defaultScopes = [
 	'user-modify-playback-state',
 	'user-read-recently-played'
 ]
-
-interface LibrespotOptions {
-	clientId?: string
-	deviceId?: string
-	scopes?: string[]
-	sessionOptions?: LibrespotSessionOptions
-}
-
-interface LibrespotCredentials {
-	username: string
-	password: string
-}
 
 class LibrespotToken {
 	accessToken: string
@@ -117,8 +107,9 @@ export default class Librespot {
 		return new LibrespotToken(tokenResponse)
 	}
 
-	async sendHttpRequest(method: string, url: string, headers = {}): Promise<Response> {
-		let resp = await fetch(`https://${this.spclient}${url}`, {
+	async fetchWithAuth(method: string, url: string, headers = {}): Promise<Response> {
+		if (!url.startsWith('https://')) url = `https://${this.spclient}${url}`
+		let resp = await fetch(url, {
 			method,
 			headers: {
 				...headers,
@@ -131,11 +122,26 @@ export default class Librespot {
 		return resp
 	}
 
-	async getTrackMetadata(trackId: string) {
-		const resp = await this.sendHttpRequest('get', `/metadata/4/track/${base62toHex(trackId)}`, {
+	async getTrackMetadata(trackId: string): Promise<SpotifyTrack> {
+		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/tracks/${trackId}`, {
 			'Accept': 'application/json'
 		})
-		return await resp.json()
+		return parseSpotifyTrack(await resp.json())
+	}
+
+	async getAlbumTracks(albumId: string): Promise<SpotifyTrack[]> {
+		let tracks = []
+		let resp = await (await this.fetchWithAuth('get', `https://api.spotify.com/v1/albums/${albumId}/tracks`, {
+			'Accept': 'application/json'
+		})).json()
+		tracks.push(...resp.items)
+		while (resp.next) {
+			resp = await (await this.fetchWithAuth('get', resp.next, {
+				'Accept': 'application/json'
+			})).json()
+			tracks.push(...resp.items)
+		}
+		return tracks.map(parseSpotifyTrack)
 	}
 
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
@@ -156,19 +162,32 @@ export default class Librespot {
 		})
 	}
 
-	async getTrack(trackId: string) {
-		const trackMetadata = await this.getTrackMetadata(trackId)
-		const resp = await this.sendHttpRequest('get', `/storage-resolve/files/audio/interactive/${trackMetadata.file[1].file_id}?alt=json`, {
+	async getTrackStream(trackId: string): Promise<{ sizeBytes: number, stream: Readable }> {
+		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/track/${base62toHex(trackId)}`, {
+			'Accept': 'application/json'
+		})).json()
+		const resp = await this.fetchWithAuth('get', `/storage-resolve/files/audio/interactive/${trackMetadata4.file[1].file_id}?alt=json`, {
 			"Accept": 'application/json'
 		})
 		const data = await resp.json()
-		const key = await this.getAudioKey(data.fileid, trackMetadata.gid)
+		const key = await this.getAudioKey(data.fileid, trackMetadata4.gid)
 		const cdnUrl = data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
 		const cdnResp = await fetch(cdnUrl)
+
 		return {
-			metadata: trackMetadata,
-			size: cdnResp.headers['content-length']-0xA7,
+			sizeBytes: parseInt(cdnResp.headers.get('content-length'))-0xA7,
 			stream: audioDecrypt(cdnResp.body, key),
+		}
+	}
+
+	async getTrack(trackId: string): Promise<{ metadata: SpotifyTrack, sizeBytes: number, stream: Readable }> {
+		const [trackStream, trackMetadata] = await Promise.all([
+			this.getTrackStream(trackId),
+			this.getTrackMetadata(trackId)
+		])
+		return {
+			...trackStream,
+			metadata: trackMetadata
 		}
 	}
 }

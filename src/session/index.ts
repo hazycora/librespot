@@ -22,25 +22,12 @@ interface ShannonObject {
 	shannon?: Shannon
 }
 
-interface HandshakeOptions {
-	product?: number
-	productFlags?: number[]
-	platform?: number
-}
-
 class AuthenticationError extends Error {
 	code?: number
 	constructor(message: string, code?: number) {
 		super(message)
 		this.code = code
 	}
-}
-
-export interface LibrespotSessionOptions {
-	deviceId: string
-	address?: string
-	port?: number
-	handshakeOptions?: HandshakeOptions
 }
 
 export default class LibrespotSession extends EventEmitter {
