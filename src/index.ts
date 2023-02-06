@@ -5,7 +5,7 @@ import { getRandomSpclient } from './utils/getService.js'
 import base62toHex from './utils/base62tohex.js'
 import LibrespotSession from './session/index.js'
 import { randomBytes } from 'crypto'
-import { parseAlbum, parseEpisode, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack } from './utils/parse.js'
+import { parseAlbum, parseArtist, parseEpisode, parsePlaylist, parsePlaylistTrack, parsePodcast, parseTrack } from './utils/parse.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -148,11 +148,11 @@ export default class Librespot {
 		return items
 	}
 	
-	async getArtistMetadata(artistId: string): Promise<SpotifyPodcast> {
+	async getArtistMetadata(artistId: string): Promise<SpotifyArtist> {
 		const resp = await this.fetchWithAuth('get', `https://api.spotify.com/v1/artists/${artistId}`, {
 			'Accept': 'application/json'
 		})
-		return await resp.json()
+		return parseArtist(await resp.json())
 	}
 	
 	async getArtistAlbums(artistId: string): Promise<SpotifyAlbum[]> {
