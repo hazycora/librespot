@@ -213,6 +213,17 @@ export default class Librespot {
 		return (await this.loopNext(`https://api.spotify.com/v1/albums/${albumId}/tracks`)).map(parsePlaylistTrack)
 	}
 
+	async getAlbum(albumId: string): Promise<SpotifyAlbum> {
+		const [albumMetadata, albumTracks] = await Promise.all([
+			this.getAlbumMetadata(albumId),
+			this.getAlbumTracks(albumId)
+		])
+		return {
+			...albumMetadata,
+			tracks: albumTracks
+		}
+	}
+
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let sequenceBuffer = Buffer.alloc(4)
@@ -300,7 +311,7 @@ export default class Librespot {
 			case 'artist': return this.getArtist(uriParts[2])
 			case 'track': return this.getTrack(uriParts[2], maxQuality)
 			case 'episode': return this.getEpisode(uriParts[2], maxQuality)
-			case 'album': return this.getAlbumMetadata(uriParts[2])
+			case 'album': return this.getAlbum(uriParts[2])
 			case 'playlist': return this.getPlaylistMetadata(uriParts[2])
 			case 'show': return this.getPodcastMetadata(uriParts[2])
 			default: throw new Error(`Unknown spotify URI ${spotifyUri}`)
