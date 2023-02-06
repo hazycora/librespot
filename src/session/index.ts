@@ -6,6 +6,7 @@ import logger from '../utils/logger.js'
 import handler from './handler.js'
 import MercuryManager from '../mercury/MercuryManager.js'
 import MercuryMessage from '../mercury/MercuryMessage.js'
+import { getRandomAP } from '../utils/getService.js'
 
 import {
 	ClientHello,
@@ -36,34 +37,32 @@ class AuthenticationError extends Error {
 }
 
 export interface LibrespotSessionOptions {
+	deviceId: string
 	address?: string
 	port?: number
 	handshakeOptions?: HandshakeOptions
 }
 
 export default class LibrespotSession extends EventEmitter {
-	address: string
-	port: number
+	address?: string
+	port?: number
+	client?: Client
 	diffie: crypto.DiffieHellmanGroup
-	client: Client
 	send: ShannonObject
 	recv: ShannonObject
 	mercury: MercuryManager
 	destroyed: boolean
 	handshakeOptions?: HandshakeOptions
+	setupComplete: boolean
+	deviceId: string
 
-	constructor({
-		address = 'ap.spotify.com',
-		port = 80,
-		...options
-	}: LibrespotSessionOptions) {
+	constructor(options: LibrespotSessionOptions) {
 		super()
 		this.destroyed = false
-		this.address = address
-		this.port = port
+		this.deviceId = options.deviceId
 		this.diffie = crypto.getDiffieHellman('modp1')
 		this.diffie.generateKeys()
-		this.client = new Client(address, port)
+		this.client = null
 		this.handshakeOptions = options.handshakeOptions
 		this.send = {
 			nonce: 0
@@ -72,11 +71,43 @@ export default class LibrespotSession extends EventEmitter {
 			nonce: 0
 		}
 		this.mercury = new MercuryManager(this)
+		this.setupComplete = false
 	}
 
 	close() {
 		this.destroyed = true
 		this.client.destroy()
+	}
+
+	async setup(username: string, password: string) {
+		let address = this.address
+		let port = this.port
+		if (!address || !port) {
+			address = 'ap.spotify.com'
+			port = 80
+			try {
+				[ address, port ] = (await getRandomAP()).split(':')
+			} catch (error) {
+				logger.error(error)
+				logger.error('Error occured, using the default endpoint.')
+			}
+		}
+		this.client = new Client(address, port)
+
+		await this.handshake()
+
+		let credentials = {
+			username,
+			auth_type: 0,
+			auth_data: Buffer.from(password, 'utf-8'),
+			device_id: this.deviceId
+		}
+
+		await this.authenticate(credentials)
+
+		this.startHandlerLoop()
+
+		this.setupComplete = true
 	}
 
 	async handshake() {

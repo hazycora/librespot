@@ -2,7 +2,7 @@ import fetch, { Response } from 'node-fetch'
 import audioDecrypt from './audio/decrypt.js'
 import { getRandomSpclient } from './utils/getService.js'
 import base62toHex from './utils/base62tohex.js'
-import { makeLibrespotSession, LibrespotSession, MakeLibrespotSessionOptions } from './core.js'
+import LibrespotSession, { LibrespotSessionOptions } from './session/index.js'
 import { randomBytes } from 'crypto'
 
 const defaultScopes = [
@@ -28,7 +28,7 @@ interface LibrespotOptions {
 	clientId?: string
 	deviceId?: string
 	scopes?: string[]
-	sessionOptions?: MakeLibrespotSessionOptions
+	sessionOptions?: LibrespotSessionOptions
 }
 
 interface LibrespotCredentials {
@@ -64,7 +64,7 @@ export default class Librespot {
 	deviceId: string
 	spclient: string
 	keySequence: number
-	sessionOptions: MakeLibrespotSessionOptions
+	sessionOptions: LibrespotSessionOptions
 
 	constructor(options: LibrespotOptions) {
 		options = {
@@ -90,7 +90,8 @@ export default class Librespot {
 		this.credentials = {
 			username, password
 		}
-		this.session = await makeLibrespotSession(username, password, this.sessionOptions)
+		this.session = new LibrespotSession(this.sessionOptions)
+		await this.session.setup(username, password)
 		this.token = await this.getToken(this.options.scopes)
 	}
 	
