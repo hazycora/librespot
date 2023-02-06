@@ -42,3 +42,23 @@ interface SpotifyTrack {
 	name: string
 	externalUrl: string
 }
+
+interface SpotifyThumbnail {
+	height: number
+	width: number
+	url: string
+}
+
+interface SpotifyAlbum {
+	albumType: string
+	name: string
+	artists: SpotifyArtist[]
+	releaseDate: string
+	tracks?: SpotifyTrack[]
+	totalTracks: number
+	coverArtwork: SpotifyThumbnail[]
+	label: string
+	id: string
+	uri: string
+	externalUrl: string
+}
