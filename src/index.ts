@@ -1,5 +1,6 @@
 import fetch, { Response } from 'node-fetch'
 import audioDecrypt from './audio/decrypt.js'
+import selectFile from './audio/selectFile.js'
 import { getRandomSpclient } from './utils/getService.js'
 import base62toHex from './utils/base62tohex.js'
 import LibrespotSession from './session/index.js'
@@ -205,11 +206,33 @@ export default class Librespot {
 		})
 	}
 
-	async getTrackStream(trackId: string): Promise<{ sizeBytes: number, stream: Readable }> {
+	async getTrackStream(trackId: string, maxQuality?: 0|1|2): Promise<{ sizeBytes: number, stream: Readable }> {
 		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/track/${base62toHex(trackId)}`, {
 			'Accept': 'application/json'
 		})).json()
-		const resp = await this.fetchWithAuth('get', `/storage-resolve/files/audio/interactive/${trackMetadata4.file[1].file_id}?alt=json`, {
+		const resp = await this.fetchWithAuth(
+			'get',
+			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.file, 'vorbis', maxQuality??1).file_id}?alt=json`, {
+			"Accept": 'application/json'
+		})
+		const data = await resp.json()
+		const key = await this.getAudioKey(data.fileid, trackMetadata4.gid)
+		const cdnUrl = data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
+		const cdnResp = await fetch(cdnUrl)
+
+		return {
+			sizeBytes: parseInt(cdnResp.headers.get('content-length'))-0xA7,
+			stream: audioDecrypt(cdnResp.body, key),
+		}
+	}
+
+	async getEpisodeStream(trackId: string, maxQuality?: 0|1|2): Promise<{ sizeBytes: number, stream: Readable }> {
+		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/episode/${base62toHex(trackId)}`, {
+			'Accept': 'application/json'
+		})).json()
+		const resp = await this.fetchWithAuth(
+			'get',
+			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.audio, 'vorbis', maxQuality??1).file_id}?alt=json`, {
 			"Accept": 'application/json'
 		})
 		const data = await resp.json()
