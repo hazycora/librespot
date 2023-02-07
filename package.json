@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "copy-files": "rm -rf ./build/proto && cp -r ./src/proto ./build/proto",
-    "build": "cat tsconfig.json && tsc -p tsconfig.json && npm run copy-files",
+    "build": "tsc -p tsconfig.json && npm run copy-files",
     "postinstall": "npm run build"
   },
   "author": "hazycora",
