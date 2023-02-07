@@ -2,6 +2,11 @@ type QualityOption = 0|1|2
 
 type SpotifyTypes = 'artist'|'album'|'track'|'playlist'|'show'|'episode'
 
+interface PagedResponse {
+	items: any[]	
+	next: string|null
+}
+
 interface HandshakeOptions {
 	product?: number
 	productFlags?: number[]
@@ -36,43 +41,99 @@ interface LibrespotStreamAndMetadata extends LibrespotStream {
 	metadata: SpotifyTrack | SpotifyEpisode
 }
 
+interface RawSpotifyFile {
+	format: string
+	file_id: string
+}
+
+interface RawSpotifyFileResponse {
+	gid: string
+	fileid: string
+	cdnurl: string[]
+}
+
+interface Metadata4 {
+	gid: string
+	file?: RawSpotifyFile[]
+	audio?: RawSpotifyFile[]
+	alternative?: Metadata4
+}
+
+interface RawExternalUrls {
+	spotify: string
+}
+
+interface SpotifyObject {
+	id: string
+	uri: string
+	externalUrl: RawExternalUrls
+}
+
+interface RawSpotifyObject {
+	id: string
+	uri: string
+	external_urls: RawExternalUrls
+}
+
 interface SpotifyThumbnail {
 	height: number|null
 	width: number|null
 	url: string
 }
 
-interface SpotifyArtist {
+interface RawSpotifyArtist extends RawSpotifyObject {
+	name: string
+	followers?: {
+		total: number
+	}
+	genres?: string[]
+	images?: SpotifyThumbnail[]
+}
+
+interface SpotifyArtist extends SpotifyObject {
 	name: string
 	avatar?: SpotifyThumbnail[]
 	genres?: string[]
 	followerCount?: number
 	albums?: SpotifyAlbum[]
-	id: string
-	uri: string
-	externalUrl: string
 }
 
-interface SpotifyUser {
+interface RawSpotifyUser extends RawSpotifyObject {
+	name: string
+	followers?: {
+		total: number
+	}
+	genres?: string[]
+	images?: SpotifyThumbnail[]
+}
+
+interface SpotifyUser extends SpotifyObject {
 	name?: string
 	followerCount?: number
 	avatar?: SpotifyThumbnail[]
 	playlists?: SpotifyPlaylist[]
-	id: string
-	uri: string
-	externalUrl: string
 }
 
 interface SpotifySearch {
-	artists: SpotifyArtist[]
-	albums: SpotifyAlbum[]
-	tracks: SpotifyTrack[]
-	playlists: SpotifyPlaylist[]
-	podcasts: SpotifyPodcast[]
-	episodes: SpotifyEpisode[]
+	artists?: SpotifyArtist[]
+	albums?: SpotifyAlbum[]
+	tracks?: SpotifyTrack[]
+	playlists?: SpotifyPlaylist[]
+	podcasts?: SpotifyPodcast[]
+	episodes?: SpotifyEpisode[]
 }
 
-interface SpotifyTrack {
+interface RawSpotifyTrack extends RawSpotifyObject {
+	name: string
+	disc_number: number
+	track_number: number
+	duration_ms: number
+	explicit: boolean
+	is_local: boolean
+	artists: RawSpotifyArtist[]
+}
+
+interface SpotifyTrack extends SpotifyObject {
 	album?: SpotifyAlbum
 	artists?: SpotifyArtist[]
 	discNumber?: number
@@ -81,12 +142,20 @@ interface SpotifyTrack {
 	explicit: boolean
 	isLocal: boolean
 	name: string
-	id: string
-	uri: string
-	externalUrl: string
 }
 
-interface SpotifyAlbum {
+interface RawSpotifyAlbum extends RawSpotifyObject {
+	name: string
+	album_type: string
+	artists: RawSpotifyArtist[]
+	release_date: string
+	total_tracks: number
+	images: SpotifyThumbnail[]
+	label?: string
+	tracks?: PagedResponse
+}
+
+interface SpotifyAlbum extends SpotifyObject {
 	albumType: string
 	name: string
 	artists: SpotifyArtist[]
@@ -95,9 +164,11 @@ interface SpotifyAlbum {
 	totalTracks: number
 	coverArtwork: SpotifyThumbnail[]
 	label?: string
-	id: string
-	uri: string
-	externalUrl: string
+}
+
+interface RawSpotifyPlaylistTrack extends RawSpotifyTrack {
+	added_at: string
+	added_by: RawSpotifyUser
 }
 
 interface SpotifyPlaylistTrack extends SpotifyTrack {
@@ -105,7 +176,17 @@ interface SpotifyPlaylistTrack extends SpotifyTrack {
 	addedBy: SpotifyUser
 }
 
-interface SpotifyPlaylist {
+interface RawSpotifyPlaylist extends RawSpotifyObject {
+	owner: RawSpotifyUser
+	name: string
+	description: string
+	collaborative: boolean
+	public: boolean
+	tracks: PagedResponse
+	images: SpotifyThumbnail[]
+}
+
+interface SpotifyPlaylist extends SpotifyObject {
 	collaborative: boolean
 	onProfile: boolean
 	description: string
@@ -114,12 +195,22 @@ interface SpotifyPlaylist {
 	owner: SpotifyUser
 	tracks?: SpotifyPlaylistTrack[]
 	totalTracks: number
-	id: string
-	uri: string
-	externalUrl: string
 }
 
-interface SpotifyPodcast {
+interface RawSpotifyPodcast extends RawSpotifyObject {
+	name: string
+	description: string
+	html_description: string
+	explicit: boolean
+	languages: string[]
+	media_type: string
+	images: SpotifyThumbnail[]
+	publisher: string
+	episodes: RawSpotifyEpisode[]
+	total_episodes: number
+}
+
+interface SpotifyPodcast extends SpotifyObject {
 	name: string
 	description: string
 	htmlDescription: string
@@ -130,12 +221,23 @@ interface SpotifyPodcast {
 	publisher: string
 	episodes?: SpotifyEpisode[]
 	totalEpisodes: number
-	id: string
-	uri: string
-	externalUrl: string
 }
 
-interface SpotifyEpisode {
+interface RawSpotifyEpisode extends RawSpotifyObject {
+	name: string
+	description: string
+	html_description: string
+	explicit: boolean
+	language: string
+	languages: string[]
+	images: SpotifyThumbnail[]
+	duration_ms: number
+	is_playable: boolean
+	is_paywall_content: boolean
+	release_date: string
+}
+
+interface SpotifyEpisode extends SpotifyObject {
 	description: string
 	htmlDescription: string
 	durationMs: number
@@ -147,7 +249,4 @@ interface SpotifyEpisode {
 	coverArtwork: SpotifyThumbnail[]
 	language: string
 	languages: string[]
-	id: string
-	uri: string
-	externalUrl: string
 }

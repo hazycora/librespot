@@ -22,6 +22,13 @@ interface ShannonObject {
 	shannon?: Shannon
 }
 
+interface Credentials {
+	username: string,
+	auth_type: number,
+	auth_data: Buffer,
+	device_id: string
+}
+
 class AuthenticationError extends Error {
 	code?: number
 	constructor(message: string, code?: number) {
@@ -42,7 +49,7 @@ export default class LibrespotSession extends EventEmitter {
 	handshakeOptions?: HandshakeOptions
 	setupComplete: boolean
 	deviceId: string
-	attributes: {[key:string]:string|number}
+	attributes: {[key:string]:string|number} = {}
 
 	constructor(options: LibrespotSessionOptions) {
 		super()
@@ -50,7 +57,6 @@ export default class LibrespotSession extends EventEmitter {
 		this.deviceId = options.deviceId
 		this.diffie = crypto.getDiffieHellman('modp1')
 		this.diffie.generateKeys()
-		this.client = null
 		this.handshakeOptions = options.handshakeOptions
 		this.send = {
 			nonce: 0
@@ -63,6 +69,7 @@ export default class LibrespotSession extends EventEmitter {
 	}
 
 	close() {
+		if (!this.client) throw new Error('No client')
 		this.destroyed = true
 		this.client.destroy()
 	}
@@ -84,7 +91,7 @@ export default class LibrespotSession extends EventEmitter {
 
 		await this.handshake()
 
-		let credentials = {
+		let credentials: Credentials = {
 			username,
 			auth_type: 0,
 			auth_data: Buffer.from(password, 'utf-8'),
@@ -99,6 +106,7 @@ export default class LibrespotSession extends EventEmitter {
 	}
 
 	async handshake() {
+		if (!this.client) throw new Error('No client')
 		await this.client.connect()
 
 		const clientHello = await new ClientHello(this.handshakeOptions).init()
@@ -160,7 +168,7 @@ export default class LibrespotSession extends EventEmitter {
 		this.client.write(clientResponsePayload)
 	}
 
-	async authenticate(credentials) {
+	async authenticate(credentials: Credentials) {
 		const clientResponse = await new ClientResponseEncrypted().init()
 		clientResponse.from(credentials)
 		const encodedResponse = clientResponse.encode()
@@ -191,6 +199,7 @@ export default class LibrespotSession extends EventEmitter {
 	}
 
 	async startHandlerLoop() {
+		if (!this.client) throw new Error('No client')
 		while (!this.client.destroyed && !this.client.destroyed) {
 			const { cmd, payload } = await this.receiveCommand()
 			handler({ cmd, payload, session: this })
@@ -198,6 +207,8 @@ export default class LibrespotSession extends EventEmitter {
 	}
 
 	receiveCommand() {
+		if (!this.client) throw new Error('No client')
+		if (!this.recv.shannon) throw new Error('No receive shannon')
 		const nonce = Buffer.allocUnsafe(4)
 		nonce.writeUInt32BE(this.recv.nonce++)
 		this.recv.shannon.nonce(nonce)
@@ -205,6 +216,8 @@ export default class LibrespotSession extends EventEmitter {
 	}
 
 	sendCommand(cmd: number, request: Uint8Array) {
+		if (!this.client) throw new Error('No client')
+		if (!this.send.shannon) throw new Error('No send shannon')
 		const size = Buffer.allocUnsafe(2)
 		size.writeUInt16BE(request.length)
 		const nonce = Buffer.allocUnsafe(4)
@@ -229,13 +242,13 @@ export default class LibrespotSession extends EventEmitter {
 		return this.client.write(payload)
 	}
 
-	sendMercuryRequest(options, payloads?): Promise<MercuryMessage> {
+	sendMercuryRequest(options: any, payloads?: any): Promise<MercuryMessage> {
 		return new Promise((resolve, reject) => {
 			this.mercury.send(options, payloads, resolve)
 		})
 	}
 
-	parseMercuryRequest(payload) {
+	parseMercuryRequest(payload: any) {
 		return this.mercury.parse(payload)
 	}
 }

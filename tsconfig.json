@@ -1,6 +1,7 @@
 {
   "include": [
 	"index.d.ts",
+	"@types",
     "src/**/*"
   ],
   "exclude": ["node_modules", "**/*.spec.ts"],
@@ -11,6 +12,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
-    "outDir": "build"
+    "outDir": "build",
+	"strict": true,
+	"noImplicitAny": true,
+	"alwaysStrict": true,
+	"strictFunctionTypes": true
   }
 }

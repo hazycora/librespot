@@ -49,13 +49,13 @@ class LibrespotToken {
 export default class Librespot {
 	options: LibrespotOptions
 	session?: LibrespotSession
-	credentials: LibrespotCredentials
-	token: LibrespotToken
+	credentials?: LibrespotCredentials
+	token?: LibrespotToken
 	deviceId: string
-	spclient: string
-	keySequence: number
+	spclient?: string
+	keySequence: number = 0
 	sessionOptions: LibrespotSessionOptions
-	maxQuality: QualityOption
+	maxQuality: QualityOption = 1
 
 	constructor(options: LibrespotOptions) {
 		options = {
@@ -64,16 +64,12 @@ export default class Librespot {
 			...options
 		}
 		this.keySequence = 0
-		this.session = null
-		this.deviceId = randomBytes(20).toString('hex')
+		this.session = undefined
+		this.deviceId = options.deviceId??randomBytes(20).toString('hex')
 		this.options = options
-		this.maxQuality = 1
 
 		this.sessionOptions = options.sessionOptions ?? {
 			deviceId: this.deviceId
-		}
-		if (this.options.deviceId && !options.sessionOptions.deviceId) {
-			options.sessionOptions.deviceId = this.deviceId
 		}
 	}
 	
@@ -89,14 +85,17 @@ export default class Librespot {
 	}
 	
 	async relogin() {
+		if (!this.credentials) throw new Error('No credentials')
 		return this.login(this.credentials.username, this.credentials.password)
 	}
 
 	async disconnect() {
+		if (!this.session) throw new Error('Not logged in')
 		return this.session.close()
 	}
 
 	getAttribute(attribute: string): string|number {
+		if (!this.session) throw new Error('Not logged in')
 		return this.session.attributes[attribute]
 	}
 
@@ -104,9 +103,11 @@ export default class Librespot {
 		return this.getAttribute('type')=='premium'
 	}
 
-	async getToken(scopes: string[]): Promise<LibrespotToken> {
+	async getToken(scopes?: string[]): Promise<LibrespotToken> {
+		if (!this.session) throw new Error('Not logged in')
+		scopes = scopes||defaultScopes
 		if (this.token && !this.token.isExpired()) {
-			if (this.token.scopes.every(scope => scopes.includes(scope))) {
+			if (this.token.scopes.every(scope => scopes?.includes(scope))) {
 				return this.token
 			}
 		}
@@ -114,7 +115,7 @@ export default class Librespot {
 			uri: `hm://keymaster/token/authenticated?scope=${scopes.join(',')}&client_id=${this.options.clientId}&device_id=${this.deviceId}`,
 			method: 'GET'
 		})
-		let tokenResponse = JSON.parse(keymasterResponse.payloads[0].toString())
+		let tokenResponse = JSON.parse(keymasterResponse.payloads?.[0].toString())
 		return new LibrespotToken(tokenResponse)
 	}
 
@@ -136,15 +137,15 @@ export default class Librespot {
 	async loopNext(url: string, maxPages?: number): Promise<any[]> {
 		maxPages = maxPages??Infinity
 		let items = []
-		let resp = await (await this.fetchWithAuth('get', url, {
+		let resp = <PagedResponse>(await (await this.fetchWithAuth('get', url, {
 			'Accept': 'application/json'
-		})).json()
+		})).json())
 		items.push(...resp.items)
 		let pageCount = 1
 		while (resp.next&&pageCount<maxPages) {
-			resp = await (await this.fetchWithAuth('get', resp.next, {
+			resp = <PagedResponse>(await (await this.fetchWithAuth('get', resp.next, {
 				'Accept': 'application/json'
-			})).json()
+			})).json())
 			items.push(...resp.items)
 			pageCount += 1
 		}
@@ -160,18 +161,26 @@ export default class Librespot {
 			'show',
 			'episode'
 		]
+		interface RawSpotifySearch {
+			artists?: PagedResponse
+			albums?: PagedResponse
+			tracks?: PagedResponse
+			playlists?: PagedResponse
+			shows?: PagedResponse
+			episodes?: PagedResponse
+		}
 		let url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=${encodeURIComponent(types.join(','))}`
 		const resp = await this.fetchWithAuth('get', url, {
 			'Accept': 'application/json'
 		})
-		const results = await resp.json()
+		const results = <RawSpotifySearch>await resp.json()
 		return {
-			artists: results.artists.items.map(parseArtist),
-			albums: results.albums.items.map(parseAlbum),
-			tracks: results.tracks.items.map(parseTrack),
-			playlists: results.playlists.items.map(parsePlaylist),
-			podcasts: results.shows.items.map(parsePodcast),
-			episodes: results.episodes.items.map(parseEpisode)
+			artists: results.artists?.items.map(parseArtist),
+			albums: results.albums?.items.map(parseAlbum),
+			tracks: results.tracks?.items.map(parseTrack),
+			playlists: results.playlists?.items.map(parsePlaylist),
+			podcasts: results.shows?.items.map(parsePodcast),
+			episodes: results.episodes?.items.map(parseEpisode)
 		}
 	}
 	
@@ -286,6 +295,7 @@ export default class Librespot {
 
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
+			if (!this.session) return reject('Not logged in')
 			let sequenceBuffer = Buffer.alloc(4)
 			sequenceBuffer.writeUintBE(this.keySequence, 0, 4)
 			let finalBuf = Buffer.concat([
@@ -303,43 +313,46 @@ export default class Librespot {
 	}
 
 	async getTrackStream(trackId: string, maxQuality?: QualityOption): Promise<LibrespotStream> {
-		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/track/${base62toHex(trackId)}`, {
+		let trackMetadata4 = <Metadata4>await (await this.fetchWithAuth('get', `/metadata/4/track/${base62toHex(trackId)}`, {
 			'Accept': 'application/json'
 		})).json()
-		let file = trackMetadata4.file
-		if (file == undefined) file = trackMetadata4.alternative[0].file
+		if (!trackMetadata4.file && trackMetadata4.alternative) trackMetadata4 = trackMetadata4.alternative
+		if (!trackMetadata4||!trackMetadata4.file) throw new Error('Could not get file')
 		const resp = await this.fetchWithAuth(
 			'get',
 			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.file, 'vorbis', maxQuality??this.maxQuality).file_id}?alt=json`, {
 			"Accept": 'application/json'
 		})
-		const data = await resp.json()
+		const data = <RawSpotifyFileResponse>await resp.json()
 		const key = await this.getAudioKey(data.fileid, trackMetadata4.gid)
 		const cdnUrl = data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
 		const cdnResp = await fetch(cdnUrl)
+		if (!cdnResp.body) throw new Error('Could not get stream')
 
 		return {
-			sizeBytes: parseInt(cdnResp.headers.get('content-length'))-0xA7,
+			sizeBytes: parseInt(cdnResp.headers.get('content-length')??'0')-0xA7,
 			stream: audioDecrypt(cdnResp.body, key),
 		}
 	}
 
 	async getEpisodeStream(episodeId: string, maxQuality?: QualityOption): Promise<LibrespotStream> {
-		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/episode/${base62toHex(episodeId)}`, {
+		const trackMetadata4 = <Metadata4>await (await this.fetchWithAuth('get', `/metadata/4/episode/${base62toHex(episodeId)}`, {
 			'Accept': 'application/json'
 		})).json()
+		if (!trackMetadata4.audio) throw new Error('Could not get file')
 		const resp = await this.fetchWithAuth(
 			'get',
 			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.audio, 'vorbis', maxQuality??this.maxQuality).file_id}?alt=json`, {
 			"Accept": 'application/json'
 		})
-		const data = await resp.json()
+		const data = <RawSpotifyFileResponse>await resp.json()
 		const key = await this.getAudioKey(data.fileid, trackMetadata4.gid)
 		const cdnUrl = data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
 		const cdnResp = await fetch(cdnUrl)
+		if (!cdnResp.body) throw new Error('Could not get stream')
 
 		return {
-			sizeBytes: parseInt(cdnResp.headers.get('content-length'))-0xA7,
+			sizeBytes: parseInt(cdnResp.headers.get('content-length')??'0')-0xA7,
 			stream: audioDecrypt(cdnResp.body, key),
 		}
 	}

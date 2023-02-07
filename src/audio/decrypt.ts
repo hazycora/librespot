@@ -5,7 +5,7 @@ const iv = Buffer.from('72e067fbddcbcf77ebe8bc643f630d93', 'hex')
 
 class skipTransform extends stream.Transform {
 	toSkip = 0xA7
-	_transform(chunk: Buffer, encoding, callback: () => void) {
+	_transform(chunk: Buffer, _encoding: string, callback: () => void) {
 		if (this.toSkip > chunk.length) {
 			this.toSkip -= chunk.length
 		} else {
