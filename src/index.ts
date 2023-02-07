@@ -306,6 +306,8 @@ export default class Librespot {
 		const trackMetadata4 = await (await this.fetchWithAuth('get', `/metadata/4/track/${base62toHex(trackId)}`, {
 			'Accept': 'application/json'
 		})).json()
+		let file = trackMetadata4.file
+		if (file == undefined) file = trackMetadata4.alternative[0].file
 		const resp = await this.fetchWithAuth(
 			'get',
 			`/storage-resolve/files/audio/interactive/${selectFile(trackMetadata4.file, 'vorbis', maxQuality??this.maxQuality).file_id}?alt=json`, {
