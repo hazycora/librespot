@@ -46,6 +46,20 @@ class LibrespotToken {
 	}
 }
 
+const FETCH_TIMEOUT = process.env.LIBRESPOT_FETCH_TIMEOUT?parseInt(process.env.LIBRESPOT_FETCH_TIMEOUT):20000
+
+async function timeout(promise: Promise<any>) {
+	let interval
+	let value = await Promise.race([
+		promise,
+		new Promise((resolve, reject) => {
+			interval = setTimeout(reject, FETCH_TIMEOUT, new Error('Timed out'))
+		})
+	])
+	clearInterval(interval)
+	return value
+}
+
 export default class Librespot {
 	options: LibrespotOptions
 	session?: LibrespotSession
@@ -121,13 +135,13 @@ export default class Librespot {
 
 	async fetchWithAuth(method: string, url: string, headers = {}): Promise<Response> {
 		if (!url.startsWith('https://')) url = `https://${this.spclient}${url}`
-		let resp = await fetch(url, {
+		let resp = <Response>await timeout(fetch(url, {
 			method,
 			headers: {
 				...headers,
 				"Authorization": `Bearer ${(await this.getToken(defaultScopes)).accessToken}`
 			}
-		})
+		}))
 		if (resp.status < 200 || resp.status >= 300) {
 			throw new Error(resp.status+' error code on '+url)
 		}
@@ -326,7 +340,7 @@ export default class Librespot {
 		const data = <RawSpotifyFileResponse>await resp.json()
 		const key = await this.getAudioKey(data.fileid, trackMetadata4.gid)
 		const cdnUrl = data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
-		const cdnResp = await fetch(cdnUrl)
+		const cdnResp = <Response>await timeout(fetch(cdnUrl))
 		if (!cdnResp.body) throw new Error('Could not get stream')
 
 		return {
@@ -348,7 +362,7 @@ export default class Librespot {
 		const data = <RawSpotifyFileResponse>await resp.json()
 		const key = await this.getAudioKey(data.fileid, trackMetadata4.gid)
 		const cdnUrl = data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
-		const cdnResp = await fetch(cdnUrl)
+		const cdnResp = <Response>await timeout(fetch(cdnUrl))
 		if (!cdnResp.body) throw new Error('Could not get stream')
 
 		return {
