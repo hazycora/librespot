@@ -131,6 +131,14 @@ export default class LibrespotBrowse {
 										return <SpotifyAlbum>{
 											name: obj.name,
 											coverArtwork: obj.coverArt.sources,
+											artists: obj.artists.items.map(
+												(e: any): SpotifyArtist => {
+													return {
+														name: e.profile.name,
+														...uriToBasics(e.uri)
+													}
+												}
+											),
 											...uriToBasics(obj.uri)
 										}
 									}
