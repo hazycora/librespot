@@ -81,7 +81,7 @@ interface RawExternalUrls {
 interface SpotifyObject {
 	id: string
 	uri: string
-	externalUrl: RawExternalUrls
+	externalUrl: string
 }
 
 interface RawSpotifyObject {
@@ -255,14 +255,14 @@ interface RawSpotifyPlaylist extends RawSpotifyObject {
 }
 
 interface SpotifyPlaylist extends SpotifyObject {
-	collaborative: boolean
-	onProfile: boolean
+	collaborative?: boolean
+	onProfile?: boolean
 	description: string
 	coverArtwork: SpotifyThumbnail[]
 	name: string
 	owner: SpotifyUser
 	tracks?: SpotifyPlaylistTrack[]
-	totalTracks: number
+	totalTracks?: number
 }
 
 interface RawSpotifyPodcast extends RawSpotifyObject {
@@ -280,15 +280,15 @@ interface RawSpotifyPodcast extends RawSpotifyObject {
 
 interface SpotifyPodcast extends SpotifyObject {
 	name: string
-	description: string
-	htmlDescription: string
-	explicit: boolean
-	languages: string[]
+	description?: string
+	htmlDescription?: string
+	explicit?: boolean
+	languages?: string[]
 	mediaType: string
 	coverArtwork: SpotifyThumbnail[]
 	publisher: string
 	episodes?: SpotifyEpisode[]
-	totalEpisodes: number
+	totalEpisodes?: number
 }
 
 interface RawSpotifyEpisode extends RawSpotifyObject {
@@ -306,15 +306,16 @@ interface RawSpotifyEpisode extends RawSpotifyObject {
 }
 
 interface SpotifyEpisode extends SpotifyObject {
+	podcast?: SpotifyPodcast
 	description: string
-	htmlDescription: string
+	htmlDescription?: string
 	durationMs: number
-	explicit: boolean
+	explicit?: boolean
 	name: string
-	isPlayable: boolean
-	isPaywalled: boolean
-	releaseDate: Date
+	isPlayable?: boolean
+	isPaywalled?: boolean
+	releaseDate?: Date
 	coverArtwork: SpotifyThumbnail[]
-	language: string
-	languages: string[]
+	language?: string
+	languages?: string[]
 }
