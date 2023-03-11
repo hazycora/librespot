@@ -31,9 +31,9 @@ interface RawSpotifyPlaybackState {
 		href: string
 		type: string
 		uri: string
-	}
+	} | null
 	progress_ms: number
-	item: RawSpotifyTrack | RawSpotifyEpisode
+	item: RawSpotifyTrack | null
 	currently_playing_type: string
 	actions: {
 		disallows: {
@@ -57,9 +57,9 @@ interface SpotifyPlaybackState {
 	shuffleState: boolean
 	repeatState: string
 	timestamp: number
-	context: SpotifyObject
+	context: SpotifyObject | null
 	progressMs: number
-	item: SpotifyTrack | SpotifyEpisode
+	item: SpotifyTrack | null
 	currentlyPlayingType: string
 	actions: {
 		disallows: {
@@ -106,12 +106,14 @@ export default class LibrespotPlayer {
 			shuffleState: data.shuffle_state,
 			repeatState: data.repeat_state,
 			timestamp: data.timestamp,
-			context: {
-				...uriToBasics(data.context.uri),
-				externalUrl: data.context.external_urls.spotify
-			},
+			context: data.context
+				? {
+						...uriToBasics(data.context.uri),
+						externalUrl: data.context.external_urls.spotify
+				  }
+				: null,
 			progressMs: data.progress_ms,
-			item: parseTrack(data.item),
+			item: data.item ? parseTrack(data.item) : null,
 			currentlyPlayingType: data.currently_playing_type,
 			actions: data.actions,
 			isPlaying: data.is_playing
