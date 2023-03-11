@@ -4,7 +4,7 @@ import crypto from 'crypto'
 const iv = Buffer.from('72e067fbddcbcf77ebe8bc643f630d93', 'hex')
 
 class skipTransform extends stream.Transform {
-	toSkip = 0xA7
+	toSkip = 0xa7
 	_transform(chunk: Buffer, _encoding: string, callback: () => void) {
 		if (this.toSkip > chunk.length) {
 			this.toSkip -= chunk.length
@@ -16,8 +16,14 @@ class skipTransform extends stream.Transform {
 	}
 }
 
-export default function decrypt(readStream: stream.Readable | NodeJS.ReadableStream, key: Buffer) {
-	const readable = (readStream instanceof ReadableStream) ? new stream.Readable().wrap(readStream) : readStream
+export default function decrypt(
+	readStream: stream.Readable | NodeJS.ReadableStream,
+	key: Buffer
+) {
+	const readable =
+		readStream instanceof ReadableStream
+			? new stream.Readable().wrap(readStream)
+			: readStream
 	const decipher = crypto.createDecipheriv('AES-128-CTR', key, iv)
 	return readable.pipe(decipher).pipe(new skipTransform())
 }

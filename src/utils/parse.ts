@@ -33,7 +33,7 @@ export function parseTrack(e: any): SpotifyTrack {
 		uri: e.uri,
 		isLocal: e.is_local,
 		name: e.name,
-		externalUrl: e.external_urls.spotify,
+		externalUrl: e.external_urls.spotify
 	}
 	if (e.artists) track.artists = e.artists.map(parseArtist)
 	if (e.album) track.album = parseAlbum(e.album)

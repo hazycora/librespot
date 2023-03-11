@@ -23,9 +23,9 @@ interface ShannonObject {
 }
 
 interface Credentials {
-	username: string,
-	auth_type: number,
-	auth_data: Buffer,
+	username: string
+	auth_type: number
+	auth_data: Buffer
 	device_id: string
 }
 
@@ -49,7 +49,7 @@ export default class LibrespotSession extends EventEmitter {
 	handshakeOptions?: HandshakeOptions
 	setupComplete: boolean
 	deviceId: string
-	attributes: {[key:string]:string|number} = {}
+	attributes: { [key: string]: string | number } = {}
 
 	constructor(options: LibrespotSessionOptions) {
 		super()
@@ -81,7 +81,7 @@ export default class LibrespotSession extends EventEmitter {
 			address = 'ap.spotify.com'
 			port = 80
 			try {
-				[ address, port ] = (await getRandomAP()).split(':')
+				;[address, port] = (await getRandomAP()).split(':')
 			} catch (error) {
 				logger.error(error)
 				logger.error('Error occured, using the default endpoint.')
@@ -130,27 +130,29 @@ export default class LibrespotSession extends EventEmitter {
 		const { challenge, loginFailed } = apResponseMessage.payload
 
 		if (loginFailed) {
-			throw new Error('Login failed. '+loginFailed)
+			throw new Error('Login failed. ' + loginFailed)
 		}
 
-		const sharedKey = this.diffie.computeSecret(challenge.loginCryptoChallenge.diffieHellman.gs)
-		const packets = Buffer.concat([
-			clientHelloPayload,
-			apResponsePayload
-		])
+		const sharedKey = this.diffie.computeSecret(
+			challenge.loginCryptoChallenge.diffieHellman.gs
+		)
+		const packets = Buffer.concat([clientHelloPayload, apResponsePayload])
 
 		const accumulator = []
 		for (let i = 1; i < 6; i++) {
-			const target = Buffer.concat([
-				packets,
-				Buffer.from([i])
-			])
-			const iteration = crypto.createHmac('sha1', sharedKey).update(target).digest()
+			const target = Buffer.concat([packets, Buffer.from([i])])
+			const iteration = crypto
+				.createHmac('sha1', sharedKey)
+				.update(target)
+				.digest()
 			accumulator.push(iteration)
 		}
 
 		const challengeKeysBuffer = Buffer.concat(accumulator)
-		const challengeHmac = crypto.createHmac('sha1', challengeKeysBuffer.slice(0, 20)).update(packets).digest()
+		const challengeHmac = crypto
+			.createHmac('sha1', challengeKeysBuffer.slice(0, 20))
+			.update(packets)
+			.digest()
 
 		this.send.shannon = new Shannon(challengeKeysBuffer.slice(20, 52))
 		this.recv.shannon = new Shannon(challengeKeysBuffer.slice(52, 84))
@@ -179,7 +181,10 @@ export default class LibrespotSession extends EventEmitter {
 			const apWelcome = await new APWelcome().init()
 			apWelcome.from(response.payload)
 			// logger.info(apWelcome.payload)
-			logger.info('> Authentication Successful with user', apWelcome.payload.canonicalUsername)
+			logger.info(
+				'> Authentication Successful with user',
+				apWelcome.payload.canonicalUsername
+			)
 		} else if (response.cmd === 0xad) {
 			const apFailed = await new APLoginFailed().init()
 			apFailed.from(response.payload)
@@ -224,20 +229,13 @@ export default class LibrespotSession extends EventEmitter {
 		nonce.writeUInt32BE(this.send.nonce++)
 		this.send.shannon.nonce(nonce)
 
-		let payload = Buffer.concat([
-			Buffer.from([cmd]),
-			size,
-			request
-		])
+		let payload = Buffer.concat([Buffer.from([cmd]), size, request])
 		const mac = Buffer.allocUnsafe(4)
 
 		this.send.shannon.encrypt(payload)
 		this.send.shannon.finish(mac)
 
-		payload = Buffer.concat([
-			payload,
-			mac
-		])
+		payload = Buffer.concat([payload, mac])
 
 		return this.client.write(payload)
 	}

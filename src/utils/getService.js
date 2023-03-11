@@ -1,7 +1,9 @@
 import fetch from 'node-fetch'
 
 export async function getRandomOf(service) {
-	const serviceReq = await fetch(`http://apresolve.spotify.com/?type=${encodeURIComponent(service)}`)
+	const serviceReq = await fetch(
+		`http://apresolve.spotify.com/?type=${encodeURIComponent(service)}`
+	)
 	const { [service]: list } = await serviceReq.json()
 	const randomEndpointIndex = Math.floor(Math.random() * list.length)
 	return list[randomEndpointIndex]

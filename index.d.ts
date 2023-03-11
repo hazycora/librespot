@@ -1,10 +1,16 @@
-type QualityOption = 0|1|2
+type QualityOption = 0 | 1 | 2
 
-type SpotifyTypes = 'artist'|'album'|'track'|'playlist'|'show'|'episode'
+type SpotifyTypes =
+	| 'artist'
+	| 'album'
+	| 'track'
+	| 'playlist'
+	| 'show'
+	| 'episode'
 
 interface PagedResponse {
-	items: any[]	
-	next: string|null
+	items: any[]
+	next: string | null
 }
 
 interface HandshakeOptions {
@@ -76,8 +82,8 @@ interface RawSpotifyObject {
 }
 
 interface SpotifyThumbnail {
-	height: number|null
-	width: number|null
+	height: number | null
+	width: number | null
 	url: string
 }
 

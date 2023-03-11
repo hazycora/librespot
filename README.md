@@ -15,7 +15,7 @@ import Librespot from 'librespot'
 
 const spotify = new Librespot()
 
-await spotify.login("username", "password")
+await spotify.login('username', 'password')
 ```
 
 See examples in docs/examples.
