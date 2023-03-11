@@ -18,10 +18,10 @@
 		"fast-xml-parser": "^4.1.1",
 		"node-fetch": "^2.3.0",
 		"protobufjs": "^7.2.1",
-		"shannon-bindings": "^0.1.0"
+		"shannon-bindings": "^0.1.0",
+		"@types/node-fetch": "^2.6.2"
 	},
 	"devDependencies": {
-		"@types/node-fetch": "^2.6.2",
 		"eslint": "^8.35.0",
 		"eslint-config-prettier": "^8.7.0",
 		"prettier": "^2.8.4",
