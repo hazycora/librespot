@@ -41,6 +41,7 @@ interface LibrespotCredentials {
 interface LibrespotStream {
 	sizeBytes: number
 	stream: any
+	hasLyrics?: boolean
 }
 
 interface LibrespotStreamAndMetadata extends LibrespotStream {
@@ -60,9 +61,17 @@ interface RawSpotifyFileResponse {
 
 interface Metadata4 {
 	gid: string
+	album?: {
+		gid: string
+		name: string
+		cover_group: {
+			image: RawSpotifyFile[]
+		}
+	}
 	file?: RawSpotifyFile[]
 	audio?: RawSpotifyFile[]
 	alternative?: Metadata4
+	has_lyrics?: boolean
 }
 
 interface RawExternalUrls {
@@ -148,6 +157,59 @@ interface SpotifyTrack extends SpotifyObject {
 	explicit: boolean
 	isLocal: boolean
 	name: string
+}
+
+interface RawSpotifyLyrics {
+	syncType: string
+	lines: {
+		startTimeMs: string
+		words: string
+		syllables: unknown[]
+		endTimeMs: string
+	}[]
+	provider: string
+	providerLyricsId: string
+	providerDisplayName: string
+	syncLyricsUri: string
+	isDenseTypeface: boolean
+	alternatives: unknown[]
+	language: string
+	isRtlLanguage: boolean
+	fullscreenAction: string
+}
+
+interface RawSpotifyColorLyrics {
+	lyrics: RawSpotifyLyrics
+	colors: {
+		background: number
+		text: number
+		highlightText: number
+	}
+	hasVocalRemoval: boolean
+}
+
+interface SpotifyLyrics {
+	syncType: string
+	lines: {
+		startTimeMs: string
+		words: string
+		syllables: unknown[]
+		endTimeMs: string
+	}[]
+	provider: string
+	providerDisplayName: string
+	language: string
+	isRtlLanguage: boolean
+}
+
+interface SpotifyColorLyrics {
+	lyrics: SpotifyLyrics
+	colors: {
+		background: string
+		text: string
+		highlightText: string
+	}
+	hasVocalRemoval: boolean
 }
 
 interface RawSpotifyAlbum extends RawSpotifyObject {

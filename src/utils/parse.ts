@@ -40,6 +40,33 @@ export function parseTrack(e: any): SpotifyTrack {
 	return track
 }
 
+function colorNumberToHex(number: number) {
+	return '#' + (16777216 + number).toString(16).padStart(6, '0')
+}
+
+function parseLyrics(e: any): SpotifyLyrics {
+	return {
+		syncType: e.syncType,
+		lines: e.lines,
+		provider: e.provider,
+		providerDisplayName: e.providerDisplayName,
+		language: e.language,
+		isRtlLanguage: e.isRtlLanguage
+	}
+}
+
+export function parseTrackColorLyrics(e: any): SpotifyColorLyrics {
+	return {
+		lyrics: parseLyrics(e.lyrics),
+		colors: {
+			background: colorNumberToHex(e.colors.background),
+			text: colorNumberToHex(e.colors.text),
+			highlightText: colorNumberToHex(e.colors.highlightText)
+		},
+		hasVocalRemoval: e.hasVocalRemoval
+	}
+}
+
 export function parseAlbum(e: any): SpotifyAlbum {
 	let album: SpotifyAlbum = {
 		albumType: e.album_type,

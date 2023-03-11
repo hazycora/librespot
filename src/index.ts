@@ -13,6 +13,7 @@ import {
 	parsePlaylistTrack,
 	parsePodcast,
 	parseTrack,
+	parseTrackColorLyrics,
 	parseUser
 } from './utils/parse.js'
 
@@ -334,6 +335,38 @@ export default class Librespot {
 		return parseTrack(await resp.json())
 	}
 
+	async getTrackColorLyrics(trackId: string) {
+		let trackMetadata4 = <Metadata4>await (
+			await this.fetchWithAuth(
+				'get',
+				`/metadata/4/track/${base62toHex(trackId)}`,
+				{
+					Accept: 'application/json'
+				}
+			)
+		).json()
+		if (!trackMetadata4.has_lyrics) {
+			throw new Error('Track does not have lyrics')
+		}
+		if (!trackMetadata4.album) {
+			throw new Error('Track is not part of an album')
+		}
+		const coverArtworkId =
+			trackMetadata4.album.cover_group.image[
+				trackMetadata4.album.cover_group.image.length - 1
+			].file_id
+		let lyrics = await this.fetchWithAuth(
+			'get',
+			`/color-lyrics/v2/track/${trackId}/image/spotify:image:${encodeURIComponent(
+				coverArtworkId
+			)}?format=json&vocalRemoval=false&market=from_token`,
+			{
+				'app-platform': 'WebPlayer'
+			}
+		)
+		return parseTrackColorLyrics(await lyrics.json())
+	}
+
 	async getPlaylistMetadata(playlistId: string): Promise<SpotifyPlaylist> {
 		let resp = await this.fetchWithAuth(
 			'get',
@@ -459,6 +492,7 @@ export default class Librespot {
 		if (!cdnResp.body) throw new Error('Could not get stream')
 
 		return {
+			hasLyrics: trackMetadata4.has_lyrics,
 			sizeBytes: parseInt(cdnResp.headers.get('content-length') ?? '0') - 0xa7,
 			stream: audioDecrypt(cdnResp.body, key)
 		}
