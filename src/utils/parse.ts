@@ -144,3 +144,13 @@ export function parsePodcast(e: any): SpotifyPodcast {
 		externalUrl: e.external_urls.spotify
 	}
 }
+
+export function uriToBasics(uri: string) {
+	return {
+		uri: uri,
+		id: uri.split(':')[2],
+		externalUrl: `https://open.spotify.com/${encodeURIComponent(
+			uri.split(':')[1]
+		)}/${encodeURIComponent(uri.split(':')[2])}`
+	}
+}

@@ -4,19 +4,10 @@ import {
 	parseEpisode,
 	parsePlaylist,
 	parsePodcast,
-	parseTrack
+	parseTrack,
+	uriToBasics
 } from './utils/parse.js'
 import Librespot from './index.js'
-
-function uriToBasics(uri: string) {
-	return {
-		uri: uri,
-		id: uri.split(':')[2],
-		externalUrl: `https://open.spotify.com/${encodeURIComponent(
-			uri.split(':')[1]
-		)}/${encodeURIComponent(uri.split(':')[2])}`
-	}
-}
 
 type SpotifySectionItem =
 	| SpotifyPlaylist

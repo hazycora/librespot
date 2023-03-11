@@ -4,6 +4,7 @@ import timeout from './utils/timeout.js'
 import LibrespotSession from './session/index.js'
 import LibrespotBrowse from './browse.js'
 import LibrespotGet from './get.js'
+import LibrespotPlayer from './player.js'
 import { randomBytes } from 'crypto'
 
 const defaultScopes = [
@@ -198,4 +199,6 @@ export default class Librespot {
 	browse = new LibrespotBrowse(this)
 
 	get = new LibrespotGet(this)
+
+	player = new LibrespotPlayer(this)
 }
