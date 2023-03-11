@@ -1,4 +1,4 @@
-import fetch, { Response } from 'node-fetch'
+import fetch, { Request, RequestInit, Response } from 'node-fetch'
 import { getRandomSpclient } from './utils/getService.js'
 import timeout from './utils/timeout.js'
 import LibrespotSession from './session/index.js'
@@ -128,26 +128,24 @@ export default class Librespot {
 	}
 
 	async fetchWithAuth(
-		method: string,
-		url: string,
-		headers = {}
+		resource: Request | string,
+		init?: RequestInit
 	): Promise<Response> {
-		if (!url.startsWith('https://')) url = `https://${this.spclient}${url}`
-		let resp = <Response>await timeout(
-			fetch(url, {
-				method,
-				headers: {
-					...headers,
-					Authorization: `Bearer ${
-						(
-							await this.getToken(defaultScopes)
-						).accessToken
-					}`
-				}
-			})
-		)
+		if (typeof resource == 'string') {
+			if (!resource.startsWith('https://')) {
+				resource = `https://${this.spclient}${resource}`
+			}
+			resource = new Request(resource)
+		}
+		init = init ?? {}
+		init.headers = (init.headers ?? {}) as { [key: string]: string }
+		init.headers['Authorization'] = `Bearer ${
+			(await this.getToken(defaultScopes)).accessToken
+		}`
+		let resp = <Response>await timeout(fetch(resource, init))
 		if (!resp.ok) {
-			throw new Error(resp.status + ' error code on ' + url)
+			console.log('??:', await resp.text())
+			throw new Error(resp.status + ' error code on ' + resource.url)
 		}
 		return resp
 	}
@@ -156,16 +154,20 @@ export default class Librespot {
 		maxPages = maxPages ?? Infinity
 		let items = []
 		let resp = <PagedResponse>await (
-			await this.fetchWithAuth('get', url, {
-				Accept: 'application/json'
+			await this.fetchWithAuth(url, {
+				headers: {
+					Accept: 'application/json'
+				}
 			})
 		).json()
 		items.push(...resp.items)
 		let pageCount = 1
 		while (resp.next && pageCount < maxPages) {
 			resp = <PagedResponse>await (
-				await this.fetchWithAuth('get', resp.next, {
-					Accept: 'application/json'
+				await this.fetchWithAuth(resp.next, {
+					headers: {
+						Accept: 'application/json'
+					}
 				})
 			).json()
 			items.push(...resp.items)

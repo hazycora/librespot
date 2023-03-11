@@ -25,10 +25,11 @@ export default class LibrespotGet {
 
 	async artistMetadata(artistId: string): Promise<SpotifyArtist> {
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/artists/${artistId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parseArtist(await resp.json())
@@ -59,10 +60,11 @@ export default class LibrespotGet {
 
 	async userMetadata(userId: string): Promise<SpotifyUser> {
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/users/${userId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parseUser(await resp.json())
@@ -93,10 +95,11 @@ export default class LibrespotGet {
 
 	async podcastMetadata(showId: string): Promise<SpotifyPodcast> {
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/shows/${showId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parsePodcast(await resp.json())
@@ -104,10 +107,11 @@ export default class LibrespotGet {
 
 	async episodeMetadata(episodeId: string): Promise<SpotifyEpisode> {
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/episodes/${episodeId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parseEpisode(await resp.json())
@@ -115,10 +119,11 @@ export default class LibrespotGet {
 
 	async trackMetadata(trackId: string): Promise<SpotifyTrack> {
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/tracks/${trackId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parseTrack(await resp.json())
@@ -127,10 +132,11 @@ export default class LibrespotGet {
 	async trackColorLyrics(trackId: string) {
 		let trackMetadata4 = <Metadata4>await (
 			await this.#librespot.fetchWithAuth(
-				'get',
 				`/metadata/4/track/${base62toHex(trackId)}`,
 				{
-					Accept: 'application/json'
+					headers: {
+						Accept: 'application/json'
+					}
 				}
 			)
 		).json()
@@ -145,12 +151,13 @@ export default class LibrespotGet {
 				trackMetadata4.album.cover_group.image.length - 1
 			].file_id
 		let lyrics = await this.#librespot.fetchWithAuth(
-			'get',
 			`/color-lyrics/v2/track/${trackId}/image/spotify:image:${encodeURIComponent(
 				coverArtworkId
 			)}?format=json&vocalRemoval=false&market=from_token`,
 			{
-				'app-platform': 'WebPlayer'
+				headers: {
+					'app-platform': 'WebPlayer'
+				}
 			}
 		)
 		return parseTrackColorLyrics(await lyrics.json())
@@ -158,10 +165,11 @@ export default class LibrespotGet {
 
 	async playlistMetadata(playlistId: string): Promise<SpotifyPlaylist> {
 		let resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/playlists/${playlistId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parsePlaylist(await resp.json())
@@ -192,10 +200,11 @@ export default class LibrespotGet {
 
 	async albumMetadata(albumId: string): Promise<SpotifyAlbum> {
 		let resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`https://api.spotify.com/v1/albums/${albumId}`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		return parseAlbum(await resp.json())
@@ -230,10 +239,11 @@ export default class LibrespotGet {
 	): Promise<LibrespotStream> {
 		let trackMetadata4 = <Metadata4>await (
 			await this.#librespot.fetchWithAuth(
-				'get',
 				`/metadata/4/track/${base62toHex(trackId)}`,
 				{
-					Accept: 'application/json'
+					headers: {
+						Accept: 'application/json'
+					}
 				}
 			)
 		).json()
@@ -242,7 +252,6 @@ export default class LibrespotGet {
 		if (!trackMetadata4 || !trackMetadata4.file)
 			throw new Error('Could not get file')
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`/storage-resolve/files/audio/interactive/${
 				selectFile(
 					trackMetadata4.file,
@@ -251,7 +260,9 @@ export default class LibrespotGet {
 				).file_id
 			}?alt=json`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		const data = <RawSpotifyFileResponse>await resp.json()
@@ -277,16 +288,16 @@ export default class LibrespotGet {
 	): Promise<LibrespotStream> {
 		const trackMetadata4 = <Metadata4>await (
 			await this.#librespot.fetchWithAuth(
-				'get',
 				`/metadata/4/episode/${base62toHex(episodeId)}`,
 				{
-					Accept: 'application/json'
+					headers: {
+						Accept: 'application/json'
+					}
 				}
 			)
 		).json()
 		if (!trackMetadata4.audio) throw new Error('Could not get file')
 		const resp = await this.#librespot.fetchWithAuth(
-			'get',
 			`/storage-resolve/files/audio/interactive/${
 				selectFile(
 					trackMetadata4.audio,
@@ -295,7 +306,9 @@ export default class LibrespotGet {
 				).file_id
 			}?alt=json`,
 			{
-				Accept: 'application/json'
+				headers: {
+					Accept: 'application/json'
+				}
 			}
 		)
 		const data = <RawSpotifyFileResponse>await resp.json()

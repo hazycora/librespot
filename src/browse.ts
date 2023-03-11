@@ -28,8 +28,10 @@ export default class LibrespotBrowse {
 		let url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
 			query
 		)}&type=${encodeURIComponent(types.join(','))}`
-		const resp = await this.#librespot.fetchWithAuth('get', url, {
-			Accept: 'application/json'
+		const resp = await this.#librespot.fetchWithAuth(url, {
+			headers: {
+				Accept: 'application/json'
+			}
 		})
 		const results = <RawSpotifySearch>await resp.json()
 		return {
