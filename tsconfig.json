@@ -1,6 +1,6 @@
 {
 	"include": ["index.d.ts", "@types", "src/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts"],
+	"exclude": ["node_modules", "**/*.spec.ts", "build"],
 	"compilerOptions": {
 		"moduleResolution": "node",
 		"target": "es2016",
@@ -9,6 +9,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"allowJs": true,
 		"outDir": "build",
+		"declaration": true,
 		"strict": true,
 		"noImplicitAny": true,
 		"alwaysStrict": true,

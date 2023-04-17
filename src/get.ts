@@ -1,4 +1,4 @@
-import { Response } from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 import audioDecrypt from './audio/decrypt.js'
 import selectFile from './audio/selectFile.js'
 import timeout from './utils/timeout.js'
