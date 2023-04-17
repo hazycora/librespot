@@ -19,7 +19,7 @@ class skipTransform extends stream.Transform {
 export default function decrypt(
 	readStream: stream.Readable | NodeJS.ReadableStream,
 	key: Buffer
-) {
+): stream.Readable {
 	const readable =
 		readStream instanceof ReadableStream
 			? new stream.Readable().wrap(readStream)

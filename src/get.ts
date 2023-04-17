@@ -28,7 +28,7 @@ import {
 
 interface LibrespotStream {
 	sizeBytes: number
-	stream: any
+	stream: NodeJS.ReadableStream
 	hasLyrics?: boolean
 }
 
