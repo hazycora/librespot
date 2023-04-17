@@ -38,16 +38,6 @@ interface LibrespotCredentials {
 	password: string
 }
 
-interface LibrespotStream {
-	sizeBytes: number
-	stream: any
-	hasLyrics?: boolean
-}
-
-interface LibrespotStreamAndMetadata extends LibrespotStream {
-	metadata: SpotifyTrack | SpotifyEpisode
-}
-
 interface RawSpotifyFile {
 	format: string
 	file_id: string
@@ -78,12 +68,6 @@ interface RawExternalUrls {
 	spotify: string
 }
 
-interface SpotifyObject {
-	id: string
-	uri: string
-	externalUrl: string
-}
-
 interface RawSpotifyObject {
 	id: string
 	uri: string
@@ -105,14 +89,6 @@ interface RawSpotifyArtist extends RawSpotifyObject {
 	images?: SpotifyThumbnail[]
 }
 
-interface SpotifyArtist extends SpotifyObject {
-	name: string
-	avatar?: SpotifyThumbnail[]
-	genres?: string[]
-	followerCount?: number
-	albums?: SpotifyAlbum[]
-}
-
 interface RawSpotifyUser extends RawSpotifyObject {
 	name: string
 	followers?: {
@@ -120,22 +96,6 @@ interface RawSpotifyUser extends RawSpotifyObject {
 	}
 	genres?: string[]
 	images?: SpotifyThumbnail[]
-}
-
-interface SpotifyUser extends SpotifyObject {
-	name?: string
-	followerCount?: number
-	avatar?: SpotifyThumbnail[]
-	playlists?: SpotifyPlaylist[]
-}
-
-interface SpotifySearch {
-	artists?: SpotifyArtist[]
-	albums?: SpotifyAlbum[]
-	tracks?: SpotifyTrack[]
-	playlists?: SpotifyPlaylist[]
-	podcasts?: SpotifyPodcast[]
-	episodes?: SpotifyEpisode[]
 }
 
 interface RawSpotifyTrack extends RawSpotifyObject {
@@ -146,17 +106,6 @@ interface RawSpotifyTrack extends RawSpotifyObject {
 	explicit: boolean
 	is_local: boolean
 	artists: RawSpotifyArtist[]
-}
-
-interface SpotifyTrack extends SpotifyObject {
-	album?: SpotifyAlbum
-	artists?: SpotifyArtist[]
-	discNumber?: number
-	trackNumber: number
-	durationMs: number
-	explicit: boolean
-	isLocal: boolean
-	name: string
 }
 
 interface RawSpotifyLyrics {
@@ -223,25 +172,9 @@ interface RawSpotifyAlbum extends RawSpotifyObject {
 	tracks?: PagedResponse
 }
 
-interface SpotifyAlbum extends SpotifyObject {
-	albumType: string
-	name: string
-	artists: SpotifyArtist[]
-	releaseDate: Date
-	tracks?: SpotifyTrack[]
-	totalTracks: number
-	coverArtwork: SpotifyThumbnail[]
-	label?: string
-}
-
 interface RawSpotifyPlaylistTrack extends RawSpotifyTrack {
 	added_at: string
 	added_by: RawSpotifyUser
-}
-
-interface SpotifyPlaylistTrack extends SpotifyTrack {
-	addedAt: Date
-	addedBy: SpotifyUser
 }
 
 interface RawSpotifyPlaylist extends RawSpotifyObject {
@@ -252,17 +185,6 @@ interface RawSpotifyPlaylist extends RawSpotifyObject {
 	public: boolean
 	tracks: PagedResponse
 	images: SpotifyThumbnail[]
-}
-
-interface SpotifyPlaylist extends SpotifyObject {
-	collaborative?: boolean
-	onProfile?: boolean
-	description: string
-	coverArtwork: SpotifyThumbnail[]
-	name: string
-	owner: SpotifyUser
-	tracks?: SpotifyPlaylistTrack[]
-	totalTracks?: number
 }
 
 interface RawSpotifyPodcast extends RawSpotifyObject {
@@ -276,19 +198,6 @@ interface RawSpotifyPodcast extends RawSpotifyObject {
 	publisher: string
 	episodes: RawSpotifyEpisode[]
 	total_episodes: number
-}
-
-interface SpotifyPodcast extends SpotifyObject {
-	name: string
-	description?: string
-	htmlDescription?: string
-	explicit?: boolean
-	languages?: string[]
-	mediaType: string
-	coverArtwork: SpotifyThumbnail[]
-	publisher: string
-	episodes?: SpotifyEpisode[]
-	totalEpisodes?: number
 }
 
 interface RawSpotifyEpisode extends RawSpotifyObject {
@@ -305,17 +214,43 @@ interface RawSpotifyEpisode extends RawSpotifyObject {
 	release_date: string
 }
 
-interface SpotifyEpisode extends SpotifyObject {
-	podcast?: SpotifyPodcast
-	description: string
-	htmlDescription?: string
-	durationMs: number
-	explicit?: boolean
+interface RawSpotifyDevice {
+	id: string
+	is_active: boolean
+	is_private_session: boolean
+	is_restricted: boolean
 	name: string
-	isPlayable?: boolean
-	isPaywalled?: boolean
-	releaseDate?: Date
-	coverArtwork: SpotifyThumbnail[]
-	language?: string
-	languages?: string[]
+	type: string
+	volume_percent: number
+}
+
+interface RawSpotifyPlaybackState {
+	device: RawSpotifyDevice
+	shuffle_state: boolean
+	repeat_state: string
+	timestamp: number
+	context: {
+		external_urls: RawExternalUrls
+		href: string
+		type: string
+		uri: string
+	} | null
+	progress_ms: number
+	item: RawSpotifyTrack | null
+	currently_playing_type: string
+	actions: {
+		disallows: {
+			interrupting_playback?: boolean
+			pausing?: boolean
+			resuming?: boolean
+			seeking?: boolean
+			skipping_next?: boolean
+			skipping_prev?: boolean
+			toggling_repeat_context?: boolean
+			toggling_shuffle?: boolean
+			toggling_repeat_track?: boolean
+			transferring_playback?: boolean
+		}
+	}
+	is_playing: boolean
 }

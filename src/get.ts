@@ -15,6 +15,26 @@ import {
 	parseTrackColorLyrics,
 	parseUser
 } from './utils/parse.js'
+import {
+	SpotifyArtist,
+	SpotifyTrack,
+	SpotifyEpisode,
+	SpotifyAlbum,
+	SpotifyUser,
+	SpotifyPlaylist,
+	SpotifyPodcast,
+	SpotifyPlaylistTrack
+} from './utils/types.js'
+
+interface LibrespotStream {
+	sizeBytes: number
+	stream: any
+	hasLyrics?: boolean
+}
+
+interface LibrespotStreamAndMetadata extends LibrespotStream {
+	metadata: SpotifyTrack | SpotifyEpisode
+}
 
 export default class LibrespotGet {
 	#librespot: Librespot

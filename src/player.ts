@@ -1,15 +1,6 @@
 import Librespot from './index.js'
 import { parseTrack, uriToBasics } from './utils/parse.js'
-
-interface RawSpotifyDevice {
-	id: string
-	is_active: boolean
-	is_private_session: boolean
-	is_restricted: boolean
-	name: string
-	type: string
-	volume_percent: number
-}
+import { SpotifyObject, SpotifyTrack } from './utils/types.js'
 
 interface SpotifyDevice {
 	id: string
@@ -19,37 +10,6 @@ interface SpotifyDevice {
 	name: string
 	type: string
 	volumePercent: number
-}
-
-interface RawSpotifyPlaybackState {
-	device: RawSpotifyDevice
-	shuffle_state: boolean
-	repeat_state: string
-	timestamp: number
-	context: {
-		external_urls: RawExternalUrls
-		href: string
-		type: string
-		uri: string
-	} | null
-	progress_ms: number
-	item: RawSpotifyTrack | null
-	currently_playing_type: string
-	actions: {
-		disallows: {
-			interrupting_playback?: boolean
-			pausing?: boolean
-			resuming?: boolean
-			seeking?: boolean
-			skipping_next?: boolean
-			skipping_prev?: boolean
-			toggling_repeat_context?: boolean
-			toggling_shuffle?: boolean
-			toggling_repeat_track?: boolean
-			transferring_playback?: boolean
-		}
-	}
-	is_playing: boolean
 }
 
 interface SpotifyPlaybackState {

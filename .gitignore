@@ -12,3 +12,4 @@ test.ogg
 /credentials.json
 .env
 .env.*
+/.vscode

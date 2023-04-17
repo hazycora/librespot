@@ -1,16 +1,17 @@
 {
 	"name": "librespot",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"description": "A FOSS Spotify library.",
 	"main": "build/index.js",
 	"types": "build/index.d.ts",
 	"type": "module",
 	"files": [
-		"build/**/*"
+		"index.d.ts",
+		"build/**/*",
+		"proto/**/*"
 	],
 	"scripts": {
-		"copy-files": "rm -rf ./build/proto && cp -r ./src/proto ./build/proto",
-		"build": "tsc -p tsconfig.json && npm run copy-files",
+		"build": "tsc -p tsconfig.json",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write ."
 	},

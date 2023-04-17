@@ -12,7 +12,7 @@ export default class Message {
 
 	async init() {
 		this.protoRoot = await protobuf.load(
-			path.join(__dirname, '../proto/', this.protoFile)
+			path.join(__dirname, '../../proto/', this.protoFile)
 		)
 		this.type = this.protoRoot.lookupType(this.typeName)
 		return this

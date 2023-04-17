@@ -7,6 +7,14 @@ import {
 	parseTrack,
 	uriToBasics
 } from './utils/parse.js'
+import {
+	SpotifyAlbum,
+	SpotifyArtist,
+	SpotifyTrack,
+	SpotifyPlaylist,
+	SpotifyPodcast,
+	SpotifyEpisode
+} from './utils/types.js'
 import Librespot from './index.js'
 
 type SpotifySectionItem =
@@ -20,6 +28,15 @@ interface SpotifySection {
 	type: string
 	title?: string
 	items: SpotifySectionItem[]
+}
+
+interface SpotifySearch {
+	artists?: SpotifyArtist[]
+	albums?: SpotifyAlbum[]
+	tracks?: SpotifyTrack[]
+	playlists?: SpotifyPlaylist[]
+	podcasts?: SpotifyPodcast[]
+	episodes?: SpotifyEpisode[]
 }
 
 export default class LibrespotBrowse {

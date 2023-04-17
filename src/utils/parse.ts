@@ -1,3 +1,14 @@
+import {
+	SpotifyAlbum,
+	SpotifyUser,
+	SpotifyArtist,
+	SpotifyTrack,
+	SpotifyPlaylist,
+	SpotifyPlaylistTrack,
+	SpotifyPodcast,
+	SpotifyEpisode
+} from './types.js'
+
 export function parseUser(e: any): SpotifyUser {
 	let user: SpotifyUser = {
 		name: e.display_name,
