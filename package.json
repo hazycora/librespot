@@ -3,11 +3,14 @@
 	"version": "0.0.2",
 	"description": "A FOSS Spotify library.",
 	"main": "build/index.js",
+	"types": "build/index.d.ts",
 	"type": "module",
+	"files": [
+		"build/**/*"
+	],
 	"scripts": {
 		"copy-files": "rm -rf ./build/proto && cp -r ./src/proto ./build/proto",
 		"build": "tsc -p tsconfig.json && npm run copy-files",
-		"postinstall": "npm run build",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write ."
 	},
