@@ -5,7 +5,7 @@ A work-in-progress FOSS Spotify library in JavaScript inspired by [librespot](ht
 ## Installation
 
 ```
-npm i git+https://git.gay/h/librespot-js.git
+npm i librespot
 ```
 
 ## Usage
