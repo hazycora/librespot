@@ -10,6 +10,10 @@
 		"build/**/*",
 		"proto/**/*"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hazycora/librespot"
+	},
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
