@@ -190,11 +190,23 @@ export default class LibrespotSession extends EventEmitter {
 			apFailed.from(response.payload)
 			let description = 'Unknown error'
 			switch (apFailed.payload.errorCode) {
+				case 0x9:
+					description = 'Travel restriction'
+					break
 				case 0xb:
 					description = 'Account needs Spotify Premium'
 					break
 				case 0xc:
 					description = 'Bad credentials'
+					break
+				case 0xd:
+					description = 'Could not validate credentials'
+					break
+				case 0x10:
+					description = 'Invalid app key'
+					break
+				case 0x11:
+					description = 'Application banned'
 					break
 			}
 			throw new AuthenticationError(description, apFailed.payload.errorCode)
