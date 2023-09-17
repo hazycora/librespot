@@ -6,7 +6,9 @@ import {
 	SpotifyPlaylist,
 	SpotifyPlaylistTrack,
 	SpotifyPodcast,
-	SpotifyEpisode
+	SpotifyEpisode,
+	SpotifyLyrics,
+	SpotifyColorLyrics
 } from './types.js'
 
 export function parseUser(e: any): SpotifyUser {

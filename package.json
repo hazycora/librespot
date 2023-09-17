@@ -1,12 +1,11 @@
 {
 	"name": "librespot",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "A FOSS Spotify library.",
 	"main": "build/index.js",
 	"types": "build/index.d.ts",
 	"type": "module",
 	"files": [
-		"index.d.ts",
 		"build/**/*",
 		"proto/**/*"
 	],
@@ -18,6 +17,21 @@
 		"build": "tsc -p tsconfig.json",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./build/index.d.ts",
+			"import": "./build/index.js"
+		},
+		"./types": {
+			"types": "./build/utils/types.d.ts",
+			"import": "./build/utils/types.js"
+		},
+		"./rawtypes": {
+			"types": "./build/utils/rawtypes.d.ts",
+			"import": "./build/utils/rawtypes.js"
+		}
 	},
 	"author": "hazycora",
 	"license": "MIT",

@@ -15,6 +15,7 @@ import {
 	SpotifyPodcast,
 	SpotifyEpisode
 } from './utils/types.js'
+import { SpotifyTypes, PagedResponse } from './utils/rawtypes.js'
 import Librespot from './index.js'
 
 type SpotifySectionItem =

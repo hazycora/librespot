@@ -6,6 +6,8 @@ import LibrespotBrowse from './browse.js'
 import LibrespotGet from './get.js'
 import LibrespotPlayer from './player.js'
 import { randomBytes } from 'crypto'
+import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
+import { PagedResponse } from './utils/rawtypes.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -52,10 +54,20 @@ class LibrespotToken {
 	}
 }
 
+interface LibrespotOptions {
+	clientId?: string
+	deviceId?: string
+	scopes?: string[]
+	sessionOptions?: LibrespotSessionOptions
+}
+
 export default class Librespot {
 	options: LibrespotOptions
 	session?: LibrespotSession
-	credentials?: LibrespotCredentials
+	credentials?: {
+		username: string
+		password: string
+	}
 	token?: LibrespotToken
 	deviceId: string
 	spclient?: string

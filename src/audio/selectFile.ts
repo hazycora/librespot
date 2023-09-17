@@ -1,3 +1,5 @@
+import type { RawSpotifyFile } from '../utils/rawtypes.js'
+
 const NORMAL = 0
 const HIGH = 1
 const VERY_HIGH = 2

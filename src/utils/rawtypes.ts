@@ -1,6 +1,6 @@
-type QualityOption = 0 | 1 | 2
+import type { SpotifyThumbnail } from './types.js'
 
-type SpotifyTypes =
+export type SpotifyTypes =
 	| 'artist'
 	| 'album'
 	| 'track'
@@ -8,48 +8,23 @@ type SpotifyTypes =
 	| 'show'
 	| 'episode'
 
-interface PagedResponse {
+export interface PagedResponse {
 	items: any[]
 	next: string | null
 }
 
-interface HandshakeOptions {
-	product?: number
-	productFlags?: number[]
-	platform?: number
-}
-
-interface LibrespotSessionOptions {
-	deviceId: string
-	address?: string
-	port?: number
-	handshakeOptions?: HandshakeOptions
-}
-
-interface LibrespotOptions {
-	clientId?: string
-	deviceId?: string
-	scopes?: string[]
-	sessionOptions?: LibrespotSessionOptions
-}
-
-interface LibrespotCredentials {
-	username: string
-	password: string
-}
-
-interface RawSpotifyFile {
+export interface RawSpotifyFile {
 	format: string
 	file_id: string
 }
 
-interface RawSpotifyFileResponse {
+export interface RawSpotifyFileResponse {
 	gid: string
 	fileid: string
 	cdnurl: string[]
 }
 
-interface Metadata4 {
+export interface Metadata4 {
 	gid: string
 	album?: {
 		gid: string
@@ -64,23 +39,17 @@ interface Metadata4 {
 	has_lyrics?: boolean
 }
 
-interface RawExternalUrls {
+export interface RawExternalUrls {
 	spotify: string
 }
 
-interface RawSpotifyObject {
+export interface RawSpotifyObject {
 	id: string
 	uri: string
 	external_urls: RawExternalUrls
 }
 
-interface SpotifyThumbnail {
-	height: number | null
-	width: number | null
-	url: string
-}
-
-interface RawSpotifyArtist extends RawSpotifyObject {
+export interface RawSpotifyArtist extends RawSpotifyObject {
 	name: string
 	followers?: {
 		total: number
@@ -89,7 +58,7 @@ interface RawSpotifyArtist extends RawSpotifyObject {
 	images?: SpotifyThumbnail[]
 }
 
-interface RawSpotifyUser extends RawSpotifyObject {
+export interface RawSpotifyUser extends RawSpotifyObject {
 	name: string
 	followers?: {
 		total: number
@@ -98,7 +67,7 @@ interface RawSpotifyUser extends RawSpotifyObject {
 	images?: SpotifyThumbnail[]
 }
 
-interface RawSpotifyTrack extends RawSpotifyObject {
+export interface RawSpotifyTrack extends RawSpotifyObject {
 	name: string
 	disc_number: number
 	track_number: number
@@ -108,7 +77,7 @@ interface RawSpotifyTrack extends RawSpotifyObject {
 	artists: RawSpotifyArtist[]
 }
 
-interface RawSpotifyLyrics {
+export interface RawSpotifyLyrics {
 	syncType: string
 	lines: {
 		startTimeMs: string
@@ -127,7 +96,7 @@ interface RawSpotifyLyrics {
 	fullscreenAction: string
 }
 
-interface RawSpotifyColorLyrics {
+export interface RawSpotifyColorLyrics {
 	lyrics: RawSpotifyLyrics
 	colors: {
 		background: number
@@ -137,31 +106,7 @@ interface RawSpotifyColorLyrics {
 	hasVocalRemoval: boolean
 }
 
-interface SpotifyLyrics {
-	syncType: string
-	lines: {
-		startTimeMs: string
-		words: string
-		syllables: unknown[]
-		endTimeMs: string
-	}[]
-	provider: string
-	providerDisplayName: string
-	language: string
-	isRtlLanguage: boolean
-}
-
-interface SpotifyColorLyrics {
-	lyrics: SpotifyLyrics
-	colors: {
-		background: string
-		text: string
-		highlightText: string
-	}
-	hasVocalRemoval: boolean
-}
-
-interface RawSpotifyAlbum extends RawSpotifyObject {
+export interface RawSpotifyAlbum extends RawSpotifyObject {
 	name: string
 	album_type: string
 	artists: RawSpotifyArtist[]
@@ -172,12 +117,12 @@ interface RawSpotifyAlbum extends RawSpotifyObject {
 	tracks?: PagedResponse
 }
 
-interface RawSpotifyPlaylistTrack extends RawSpotifyTrack {
+export interface RawSpotifyPlaylistTrack extends RawSpotifyTrack {
 	added_at: string
 	added_by: RawSpotifyUser
 }
 
-interface RawSpotifyPlaylist extends RawSpotifyObject {
+export interface RawSpotifyPlaylist extends RawSpotifyObject {
 	owner: RawSpotifyUser
 	name: string
 	description: string
@@ -187,7 +132,7 @@ interface RawSpotifyPlaylist extends RawSpotifyObject {
 	images: SpotifyThumbnail[]
 }
 
-interface RawSpotifyPodcast extends RawSpotifyObject {
+export interface RawSpotifyPodcast extends RawSpotifyObject {
 	name: string
 	description: string
 	html_description: string
@@ -200,7 +145,7 @@ interface RawSpotifyPodcast extends RawSpotifyObject {
 	total_episodes: number
 }
 
-interface RawSpotifyEpisode extends RawSpotifyObject {
+export interface RawSpotifyEpisode extends RawSpotifyObject {
 	name: string
 	description: string
 	html_description: string
@@ -214,7 +159,7 @@ interface RawSpotifyEpisode extends RawSpotifyObject {
 	release_date: string
 }
 
-interface RawSpotifyDevice {
+export interface RawSpotifyDevice {
 	id: string
 	is_active: boolean
 	is_private_session: boolean
@@ -224,7 +169,7 @@ interface RawSpotifyDevice {
 	volume_percent: number
 }
 
-interface RawSpotifyPlaybackState {
+export interface RawSpotifyPlaybackState {
 	device: RawSpotifyDevice
 	shuffle_state: boolean
 	repeat_state: string

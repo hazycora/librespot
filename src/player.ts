@@ -1,5 +1,6 @@
 import Librespot from './index.js'
 import { parseTrack, uriToBasics } from './utils/parse.js'
+import { RawSpotifyPlaybackState } from './utils/rawtypes.js'
 import { SpotifyObject, SpotifyTrack } from './utils/types.js'
 
 interface SpotifyDevice {

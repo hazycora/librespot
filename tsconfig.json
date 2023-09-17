@@ -1,5 +1,5 @@
 {
-	"include": ["index.d.ts", "@types", "src/**/*"],
+	"include": ["@types", "src/**/*"],
 	"exclude": ["node_modules", "**/*.spec.ts", "build"],
 	"compilerOptions": {
 		"moduleResolution": "node",
@@ -10,6 +10,7 @@
 		"allowJs": true,
 		"outDir": "build",
 		"declaration": true,
+		"sourceMap": true,
 		"strict": true,
 		"noImplicitAny": true,
 		"alwaysStrict": true,

@@ -23,8 +23,10 @@ import {
 	SpotifyUser,
 	SpotifyPlaylist,
 	SpotifyPodcast,
-	SpotifyPlaylistTrack
+	SpotifyPlaylistTrack,
+	QualityOption
 } from './utils/types.js'
+import { Metadata4, RawSpotifyFileResponse } from './utils/rawtypes.js'
 
 interface LibrespotStream {
 	sizeBytes: number

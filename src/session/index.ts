@@ -16,6 +16,7 @@ import {
 	APWelcome,
 	APLoginFailed
 } from '../messages/index.js'
+import { HandshakeOptions, LibrespotSessionOptions } from '../utils/types.js'
 
 interface ShannonObject {
 	nonce: number

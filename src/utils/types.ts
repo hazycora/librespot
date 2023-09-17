@@ -1,7 +1,25 @@
+export type QualityOption = 0 | 1 | 2
+
+export interface HandshakeOptions {
+	product?: number
+	productFlags?: number[]
+	platform?: number
+}
+export interface LibrespotSessionOptions {
+	deviceId: string
+	address?: string
+	port?: number
+	handshakeOptions?: HandshakeOptions
+}
 export interface SpotifyObject {
 	id: string
 	uri: string
 	externalUrl: string
+}
+export interface SpotifyThumbnail {
+	height: number | null
+	width: number | null
+	url: string
 }
 export interface SpotifyAlbum extends SpotifyObject {
 	albumType: string
@@ -75,4 +93,28 @@ export interface SpotifyEpisode extends SpotifyObject {
 	coverArtwork: SpotifyThumbnail[]
 	language?: string
 	languages?: string[]
+}
+
+export interface SpotifyLyrics {
+	syncType: string
+	lines: {
+		startTimeMs: string
+		words: string
+		syllables: unknown[]
+		endTimeMs: string
+	}[]
+	provider: string
+	providerDisplayName: string
+	language: string
+	isRtlLanguage: boolean
+}
+
+export interface SpotifyColorLyrics {
+	lyrics: SpotifyLyrics
+	colors: {
+		background: string
+		text: string
+		highlightText: string
+	}
+	hasVocalRemoval: boolean
 }
