@@ -54,7 +54,7 @@ class LibrespotToken {
 	}
 }
 
-interface LibrespotOptions {
+export interface LibrespotOptions {
 	clientId?: string
 	deviceId?: string
 	scopes?: string[]
