@@ -50,6 +50,18 @@ interface LibrespotStreamAndMetadata extends LibrespotStream {
 	metadata: SpotifyTrack | SpotifyEpisode
 }
 
+function filterCDNs(urls: string[]) {
+	return urls.filter(url => {
+		const urlObj = new URL(url)
+		// for whatever reason these CDNs have broken certificates.
+		// https://github.com/kokarare1212/librespot-python/issues/241
+		return (
+			!urlObj.hostname.includes('audio4-gm-fb') &&
+			!urlObj.hostname.includes('audio-gm-fb')
+		)
+	})
+}
+
 export default class LibrespotGet {
 	#librespot: Librespot
 
@@ -304,8 +316,8 @@ export default class LibrespotGet {
 			data.fileid,
 			trackMetadata4.gid
 		)
-		const cdnUrl =
-			data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
+		const cdnUrls = filterCDNs(data.cdnurl)
+		const cdnUrl = cdnUrls[Math.round(Math.random() * (cdnUrls.length - 1))]
 		const cdnResp = <Response>await timeout(fetch(cdnUrl))
 		if (!cdnResp.body) throw new Error('Could not get stream')
 
@@ -350,8 +362,8 @@ export default class LibrespotGet {
 			data.fileid,
 			trackMetadata4.gid
 		)
-		const cdnUrl =
-			data.cdnurl[Math.round(Math.random() * (data.cdnurl.length - 1))]
+		const cdnUrls = filterCDNs(data.cdnurl)
+		const cdnUrl = cdnUrls[Math.round(Math.random() * (cdnUrls.length - 1))]
 		const cdnResp = <Response>await timeout(fetch(cdnUrl))
 		if (!cdnResp.body) throw new Error('Could not get stream')
 
