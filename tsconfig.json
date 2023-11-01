@@ -1,6 +1,6 @@
 {
 	"include": ["@types", "src/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts", "build"],
+	"exclude": ["node_modules", "docs", "**/*.spec.ts", "build"],
 	"compilerOptions": {
 		"moduleResolution": "node",
 		"target": "es2016",

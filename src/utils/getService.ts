@@ -1,10 +1,14 @@
 import { fetch } from 'undici'
 
-export async function getRandomOf(service) {
+type Service = 'accesspoint' | 'spclient'
+
+export async function getRandomOf(service: Service) {
 	const serviceReq = await fetch(
 		`http://apresolve.spotify.com/?type=${encodeURIComponent(service)}`
 	)
-	const { [service]: list } = await serviceReq.json()
+	const { [service]: list } = <{ [service in Service]: string[] }>(
+		await serviceReq.json()
+	)
 	const randomEndpointIndex = Math.floor(Math.random() * list.length)
 	return list[randomEndpointIndex]
 }

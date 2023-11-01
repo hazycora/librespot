@@ -2,7 +2,19 @@ import net from 'net'
 import logger from '../utils/logger.js'
 
 export default class Client {
-	constructor(address, port) {
+	address: string
+	port: number
+	client: net.Socket
+	dataReceived: Buffer
+	readers: {
+		nbOfBytes: number
+		partial: boolean
+		resolve: (buffer: Buffer | PromiseLike<Buffer>) => void
+	}[]
+	destroyed: boolean
+
+	constructor(address: string, port: number) {
+		this.destroyed = false
 		this.address = address
 		this.port = port
 		this.client = new net.Socket()
@@ -31,7 +43,7 @@ export default class Client {
 	}
 
 	connect() {
-		return new Promise(resolve =>
+		return new Promise<void>(resolve =>
 			this.client.connect(this.port, this.address, () => {
 				logger.info('Connected to ' + this.address)
 				resolve()
@@ -44,7 +56,7 @@ export default class Client {
 		this.client.destroy()
 	}
 
-	readAndSlice(nbOfBytes) {
+	readAndSlice(nbOfBytes: number) {
 		if (this.dataReceived.length >= nbOfBytes) {
 			const readData = this.dataReceived.slice(0, nbOfBytes)
 			this.dataReceived = this.dataReceived.slice(nbOfBytes)
@@ -53,9 +65,9 @@ export default class Client {
 		return null
 	}
 
-	read(nbOfBytes, { partial = false, prioritized = false } = {}) {
+	read(nbOfBytes: number, { partial = false, prioritized = false } = {}) {
 		logger.info('Trying to read', nbOfBytes, 'bytes')
-		return new Promise(resolve => {
+		return new Promise<Buffer>(resolve => {
 			const dataRead = this.readAndSlice(nbOfBytes)
 			if (dataRead) return resolve(dataRead)
 			this.readers[prioritized ? 'unshift' : 'push']({
@@ -66,7 +78,7 @@ export default class Client {
 		})
 	}
 
-	write(payload) {
+	write(payload: string | Buffer | Uint8Array) {
 		this.client.write(payload)
 	}
 
@@ -78,7 +90,7 @@ export default class Client {
 		return Buffer.concat([length, payload])
 	}
 
-	async readEncryptedPayload(shannon) {
+	async readEncryptedPayload(shannon: Shannon) {
 		const cmdBuffer = await this.read(1, { partial: true })
 		shannon.decrypt(cmdBuffer)
 		const sizeBuffer = await this.read(2, { partial: true, prioritized: true })

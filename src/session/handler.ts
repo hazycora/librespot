@@ -1,7 +1,16 @@
 import { XMLParser } from 'fast-xml-parser'
 import logger from '../utils/logger.js'
+import LibrespotSession from './index.js'
 
-export default async function ({ cmd, payload, session }) {
+export default async function ({
+	cmd,
+	payload,
+	session
+}: {
+	cmd: number
+	payload: Buffer
+	session: LibrespotSession
+}) {
 	switch (cmd) {
 		case 0x4:
 			// PacketPing
@@ -22,6 +31,8 @@ export default async function ({ cmd, payload, session }) {
 		}
 		case 0xb2: {
 			const message = await session.parseMercuryRequest(payload)
+			if (!message.header?.payload) throw new Error('No payload')
+
 			const { statusCode, uri } = message.header.payload
 
 			if (statusCode >= 400) {
@@ -34,8 +45,8 @@ export default async function ({ cmd, payload, session }) {
 		}
 		case 0x50: {
 			const parser = new XMLParser()
-			let jObj = parser.parse(payload.toString())
-			let newAttributes = jObj.products.product
+			const jObj = parser.parse(payload.toString())
+			const newAttributes = jObj.products.product
 			session.attributes = {
 				...session.attributes,
 				...newAttributes

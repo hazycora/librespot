@@ -82,7 +82,9 @@ export default class LibrespotSession extends EventEmitter {
 			address = 'ap.spotify.com'
 			port = 80
 			try {
-				;[address, port] = (await getRandomAP()).split(':')
+				const apParts = (await getRandomAP()).split(':')
+				address = apParts[0]
+				port = parseInt(apParts[1])
 			} catch (error) {
 				logger.error(error)
 				logger.error('Error occured, using the default endpoint.')

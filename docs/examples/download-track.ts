@@ -5,7 +5,7 @@ const spotify = new Librespot()
 
 await spotify.login("username", "password")
 
-let track = await spotify.get.track('1p80LdxRV74UKvL8gnD7ky')
+const track = await spotify.get.track('1p80LdxRV74UKvL8gnD7ky')
 
 await fs.promises.writeFile('example.ogg', track.stream)
 
