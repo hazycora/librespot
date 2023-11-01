@@ -2,7 +2,7 @@ export default function base62toHex(str: string): string {
 	const charset =
 		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 	const base = BigInt(62)
-	let value = str
+	const value = str
 		.split('')
 		.reverse()
 		.reduce(

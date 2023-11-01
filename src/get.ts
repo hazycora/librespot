@@ -26,7 +26,19 @@ import {
 	SpotifyPlaylistTrack,
 	QualityOption
 } from './utils/types.js'
-import { Metadata4, RawSpotifyFileResponse } from './utils/rawtypes.js'
+import {
+	Metadata4,
+	RawSpotifyAlbum,
+	RawSpotifyColorLyrics,
+	RawSpotifyEpisode,
+	RawSpotifyFileResponse,
+	RawSpotifyPlaylist,
+	RawSpotifyPlaylistTrack,
+	RawSpotifyPodcast,
+	RawSpotifyTrack,
+	RawSpotifyUser
+} from './utils/rawtypes.js'
+import { Readable } from 'stream'
 
 interface LibrespotStream {
 	sizeBytes: number
@@ -54,7 +66,7 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parseArtist(await resp.json())
+		return parseArtist(<RawSpotifyUser>await resp.json())
 	}
 
 	async artistAlbums(
@@ -62,7 +74,7 @@ export default class LibrespotGet {
 		maxPages?: number
 	): Promise<SpotifyAlbum[]> {
 		return (
-			await this.#librespot.loopNext(
+			await this.#librespot.loopNext<RawSpotifyAlbum>(
 				`https://api.spotify.com/v1/artists/${artistId}/albums`,
 				maxPages
 			)
@@ -89,7 +101,7 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parseUser(await resp.json())
+		return parseUser(<RawSpotifyUser>await resp.json())
 	}
 
 	async userPlaylists(
@@ -97,7 +109,7 @@ export default class LibrespotGet {
 		maxPages?: number
 	): Promise<SpotifyPlaylist[]> {
 		return (
-			await this.#librespot.loopNext(
+			await this.#librespot.loopNext<RawSpotifyPlaylist>(
 				`https://api.spotify.com/v1/users/${userId}/playlists`,
 				maxPages
 			)
@@ -124,7 +136,7 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parsePodcast(await resp.json())
+		return parsePodcast(<RawSpotifyPodcast>await resp.json())
 	}
 
 	async episodeMetadata(episodeId: string): Promise<SpotifyEpisode> {
@@ -136,7 +148,7 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parseEpisode(await resp.json())
+		return parseEpisode(<RawSpotifyEpisode>await resp.json())
 	}
 
 	async trackMetadata(trackId: string): Promise<SpotifyTrack> {
@@ -148,11 +160,11 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parseTrack(await resp.json())
+		return parseTrack(<RawSpotifyTrack>await resp.json())
 	}
 
 	async trackColorLyrics(trackId: string) {
-		let trackMetadata4 = <Metadata4>await (
+		const trackMetadata4 = <Metadata4>await (
 			await this.#librespot.fetchWithAuth(
 				`/metadata/4/track/${base62toHex(trackId)}`,
 				{
@@ -172,7 +184,7 @@ export default class LibrespotGet {
 			trackMetadata4.album.cover_group.image[
 				trackMetadata4.album.cover_group.image.length - 1
 			].file_id
-		let lyrics = await this.#librespot.fetchWithAuth(
+		const lyrics = await this.#librespot.fetchWithAuth(
 			`/color-lyrics/v2/track/${trackId}/image/spotify:image:${encodeURIComponent(
 				coverArtworkId
 			)}?format=json&vocalRemoval=false&market=from_token`,
@@ -182,11 +194,11 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parseTrackColorLyrics(await lyrics.json())
+		return parseTrackColorLyrics(<RawSpotifyColorLyrics>await lyrics.json())
 	}
 
 	async playlistMetadata(playlistId: string): Promise<SpotifyPlaylist> {
-		let resp = await this.#librespot.fetchWithAuth(
+		const resp = await this.#librespot.fetchWithAuth(
 			`https://api.spotify.com/v1/playlists/${playlistId}`,
 			{
 				headers: {
@@ -194,7 +206,7 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parsePlaylist(await resp.json())
+		return parsePlaylist(<RawSpotifyPlaylist>await resp.json())
 	}
 
 	async playlistTracks(
@@ -202,7 +214,7 @@ export default class LibrespotGet {
 		maxPages?: number
 	): Promise<SpotifyPlaylistTrack[]> {
 		return (
-			await this.#librespot.loopNext(
+			await this.#librespot.loopNext<RawSpotifyPlaylistTrack>(
 				`https://api.spotify.com/v1/playlists/${albumId}/tracks`,
 				maxPages
 			)
@@ -221,7 +233,7 @@ export default class LibrespotGet {
 	}
 
 	async albumMetadata(albumId: string): Promise<SpotifyAlbum> {
-		let resp = await this.#librespot.fetchWithAuth(
+		const resp = await this.#librespot.fetchWithAuth(
 			`https://api.spotify.com/v1/albums/${albumId}`,
 			{
 				headers: {
@@ -229,7 +241,7 @@ export default class LibrespotGet {
 				}
 			}
 		)
-		return parseAlbum(await resp.json())
+		return parseAlbum(<RawSpotifyAlbum>await resp.json())
 	}
 
 	async albumTracks(
@@ -237,7 +249,7 @@ export default class LibrespotGet {
 		maxPages?: number
 	): Promise<SpotifyTrack[]> {
 		return (
-			await this.#librespot.loopNext(
+			await this.#librespot.loopNext<RawSpotifyTrack>(
 				`https://api.spotify.com/v1/albums/${albumId}/tracks`,
 				maxPages
 			)
@@ -388,7 +400,7 @@ export default class LibrespotGet {
 		| SpotifyPlaylist
 		| SpotifyPodcast
 	> {
-		let uriParts = spotifyUri.split(':')
+		const uriParts = spotifyUri.split(':')
 		if (uriParts[0] != 'spotify') throw new Error('Invalid Spotify URI')
 		switch (uriParts[1]) {
 			case 'user':
@@ -411,8 +423,8 @@ export default class LibrespotGet {
 	}
 
 	byUrl(spotifyUrl: string, maxQuality?: QualityOption) {
-		let urlObj = new URL(spotifyUrl)
-		let parts = urlObj.pathname.slice(1).split('/')
+		const urlObj = new URL(spotifyUrl)
+		const parts = urlObj.pathname.slice(1).split('/')
 		if (parts.length > 2) throw new Error('Unknown Spotify URL')
 		return this.byUri(`spotify:${parts[0]}:${parts[1]}`, maxQuality)
 	}

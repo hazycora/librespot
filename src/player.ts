@@ -47,11 +47,11 @@ export default class LibrespotPlayer {
 	}
 
 	async getState(): Promise<SpotifyPlaybackState> {
-		let response = await await this.#librespot.fetchWithAuth(
+		const response = await this.#librespot.fetchWithAuth(
 			`https://api.spotify.com/v1/me/player`
 		)
 		if (response.status == 204) throw new Error('Nothing is playing')
-		let data = <RawSpotifyPlaybackState>await response.json()
+		const data = <RawSpotifyPlaybackState>await response.json()
 		return {
 			device: {
 				id: data.device.id,

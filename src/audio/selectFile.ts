@@ -29,12 +29,12 @@ export default function (
 	type: 'vorbis' | 'mp3' | 'aac',
 	maxQuality: 0 | 1 | 2 = 1
 ): RawSpotifyFile {
-	let filesOfType = files.filter((e: { file_id: string; format: string }) => {
+	const filesOfType = files.filter((e: { file_id: string; format: string }) => {
 		if (!Object.keys(types[type]).includes(e.format)) return false
 		if (types[type][e.format] > maxQuality) return false
 		return true
 	})
-	let sorted = filesOfType.sort((a, b): number => {
+	const sorted = filesOfType.sort((a, b): number => {
 		return types[type][b.format] - types[type][a.format]
 	})
 	return sorted[0]

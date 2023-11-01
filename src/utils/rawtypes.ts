@@ -8,8 +8,9 @@ export type SpotifyTypes =
 	| 'show'
 	| 'episode'
 
-export interface PagedResponse {
-	items: any[]
+export interface PagedResponse<T> {
+	total?: number
+	items: T[]
 	next: string | null
 }
 
@@ -59,6 +60,7 @@ export interface RawSpotifyArtist extends RawSpotifyObject {
 }
 
 export interface RawSpotifyUser extends RawSpotifyObject {
+	display_name: string | undefined
 	name: string
 	followers?: {
 		total: number
@@ -68,6 +70,7 @@ export interface RawSpotifyUser extends RawSpotifyObject {
 }
 
 export interface RawSpotifyTrack extends RawSpotifyObject {
+	album: RawSpotifyAlbum
 	name: string
 	disc_number: number
 	track_number: number
@@ -114,10 +117,11 @@ export interface RawSpotifyAlbum extends RawSpotifyObject {
 	total_tracks: number
 	images: SpotifyThumbnail[]
 	label?: string
-	tracks?: PagedResponse
+	tracks?: PagedResponse<RawSpotifyTrack>
 }
 
-export interface RawSpotifyPlaylistTrack extends RawSpotifyTrack {
+export interface RawSpotifyPlaylistTrack {
+	track: RawSpotifyTrack
 	added_at: string
 	added_by: RawSpotifyUser
 }
@@ -128,7 +132,7 @@ export interface RawSpotifyPlaylist extends RawSpotifyObject {
 	description: string
 	collaborative: boolean
 	public: boolean
-	tracks: PagedResponse
+	tracks: PagedResponse<RawSpotifyPlaylistTrack>
 	images: SpotifyThumbnail[]
 }
 
@@ -141,7 +145,7 @@ export interface RawSpotifyPodcast extends RawSpotifyObject {
 	media_type: string
 	images: SpotifyThumbnail[]
 	publisher: string
-	episodes: RawSpotifyEpisode[]
+	episodes: PagedResponse<RawSpotifyEpisode>
 	total_episodes: number
 }
 

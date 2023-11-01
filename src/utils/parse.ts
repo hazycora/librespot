@@ -1,4 +1,16 @@
 import {
+	RawSpotifyAlbum,
+	RawSpotifyArtist,
+	RawSpotifyColorLyrics,
+	RawSpotifyEpisode,
+	RawSpotifyLyrics,
+	RawSpotifyPlaylist,
+	RawSpotifyPlaylistTrack,
+	RawSpotifyPodcast,
+	RawSpotifyTrack,
+	RawSpotifyUser
+} from './rawtypes.js'
+import {
 	SpotifyAlbum,
 	SpotifyUser,
 	SpotifyArtist,
@@ -11,8 +23,8 @@ import {
 	SpotifyColorLyrics
 } from './types.js'
 
-export function parseUser(e: any): SpotifyUser {
-	let user: SpotifyUser = {
+export function parseUser(e: RawSpotifyUser): SpotifyUser {
+	const user: SpotifyUser = {
 		name: e.display_name,
 		id: e.id,
 		uri: e.uri,
@@ -23,8 +35,8 @@ export function parseUser(e: any): SpotifyUser {
 	return user
 }
 
-export function parseArtist(e: any): SpotifyArtist {
-	let artist: SpotifyArtist = {
+export function parseArtist(e: RawSpotifyArtist): SpotifyArtist {
+	const artist: SpotifyArtist = {
 		name: e.name,
 		id: e.id,
 		uri: e.uri,
@@ -36,8 +48,8 @@ export function parseArtist(e: any): SpotifyArtist {
 	return artist
 }
 
-export function parseTrack(e: any): SpotifyTrack {
-	let track: SpotifyTrack = {
+export function parseTrack(e: RawSpotifyTrack): SpotifyTrack {
+	const track: SpotifyTrack = {
 		discNumber: e.disc_number,
 		trackNumber: e.track_number,
 		durationMs: e.duration_ms,
@@ -57,7 +69,7 @@ function colorNumberToHex(number: number) {
 	return '#' + (16777216 + number).toString(16).padStart(6, '0')
 }
 
-function parseLyrics(e: any): SpotifyLyrics {
+function parseLyrics(e: RawSpotifyLyrics): SpotifyLyrics {
 	return {
 		syncType: e.syncType,
 		lines: e.lines,
@@ -68,7 +80,9 @@ function parseLyrics(e: any): SpotifyLyrics {
 	}
 }
 
-export function parseTrackColorLyrics(e: any): SpotifyColorLyrics {
+export function parseTrackColorLyrics(
+	e: RawSpotifyColorLyrics
+): SpotifyColorLyrics {
 	return {
 		lyrics: parseLyrics(e.lyrics),
 		colors: {
@@ -80,8 +94,8 @@ export function parseTrackColorLyrics(e: any): SpotifyColorLyrics {
 	}
 }
 
-export function parseAlbum(e: any): SpotifyAlbum {
-	let album: SpotifyAlbum = {
+export function parseAlbum(e: RawSpotifyAlbum): SpotifyAlbum {
+	const album: SpotifyAlbum = {
 		albumType: e.album_type,
 		artists: e.artists.map(parseArtist),
 		name: e.name,
@@ -97,7 +111,9 @@ export function parseAlbum(e: any): SpotifyAlbum {
 	return album
 }
 
-export function parsePlaylistTrack(e: any): SpotifyPlaylistTrack {
+export function parsePlaylistTrack(
+	e: RawSpotifyPlaylistTrack
+): SpotifyPlaylistTrack {
 	return {
 		...parseTrack(e.track),
 		addedAt: new Date(e.added_at),
@@ -105,7 +121,7 @@ export function parsePlaylistTrack(e: any): SpotifyPlaylistTrack {
 	}
 }
 
-export function parsePlaylist(e: any): SpotifyPlaylist {
+export function parsePlaylist(e: RawSpotifyPlaylist): SpotifyPlaylist {
 	return {
 		owner: parseUser(e.owner),
 		name: e.name,
@@ -121,7 +137,7 @@ export function parsePlaylist(e: any): SpotifyPlaylist {
 	}
 }
 
-export function parseEpisode(e: any): SpotifyEpisode {
+export function parseEpisode(e: RawSpotifyEpisode): SpotifyEpisode {
 	return {
 		name: e.name,
 		description: e.description,
@@ -140,7 +156,7 @@ export function parseEpisode(e: any): SpotifyEpisode {
 	}
 }
 
-export function parsePodcast(e: any): SpotifyPodcast {
+export function parsePodcast(e: RawSpotifyPodcast): SpotifyPodcast {
 	return {
 		name: e.name,
 		description: e.description,

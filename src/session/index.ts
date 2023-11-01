@@ -92,7 +92,7 @@ export default class LibrespotSession extends EventEmitter {
 
 		await this.handshake()
 
-		let credentials: Credentials = {
+		const credentials: Credentials = {
 			username,
 			auth_type: 0,
 			auth_data: Buffer.from(password, 'utf-8'),
@@ -253,13 +253,16 @@ export default class LibrespotSession extends EventEmitter {
 		return this.client.write(payload)
 	}
 
-	sendMercuryRequest(options: any, payloads?: any): Promise<MercuryMessage> {
-		return new Promise((resolve, reject) => {
+	sendMercuryRequest(
+		options: unknown,
+		payloads?: unknown
+	): Promise<MercuryMessage> {
+		return new Promise(resolve => {
 			this.mercury.send(options, payloads, resolve)
 		})
 	}
 
-	parseMercuryRequest(payload: any) {
+	parseMercuryRequest(payload: unknown) {
 		return this.mercury.parse(payload)
 	}
 }

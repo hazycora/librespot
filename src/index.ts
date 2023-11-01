@@ -136,7 +136,7 @@ export default class Librespot {
 			)}&client_id=${this.options.clientId}&device_id=${this.deviceId}`,
 			method: 'GET'
 		})
-		let tokenResponse = JSON.parse(keymasterResponse.payloads?.[0].toString())
+		const tokenResponse = JSON.parse(keymasterResponse.payloads?.[0].toString())
 		return new LibrespotToken(tokenResponse)
 	}
 
@@ -155,7 +155,7 @@ export default class Librespot {
 		init.headers['Authorization'] = `Bearer ${
 			(await this.getToken(defaultScopes)).accessToken
 		}`
-		let resp = <Response>await timeout(fetch(resource, init))
+		const resp = <Response>await timeout(fetch(resource, init))
 		if (!resp.ok) {
 			console.log('??:', await resp.text())
 			throw new Error(resp.status + ' error code on ' + resource.url)
@@ -163,10 +163,10 @@ export default class Librespot {
 		return resp
 	}
 
-	async loopNext(url: string, maxPages?: number): Promise<any[]> {
+	async loopNext<T>(url: string, maxPages?: number): Promise<T[]> {
 		maxPages = maxPages ?? Infinity
-		let items = []
-		let resp = <PagedResponse>await (
+		const items = []
+		let resp = <PagedResponse<T>>await (
 			await this.fetchWithAuth(url, {
 				headers: {
 					Accept: 'application/json'
@@ -176,7 +176,7 @@ export default class Librespot {
 		items.push(...resp.items)
 		let pageCount = 1
 		while (resp.next && pageCount < maxPages) {
-			resp = <PagedResponse>await (
+			resp = <PagedResponse<T>>await (
 				await this.fetchWithAuth(resp.next, {
 					headers: {
 						Accept: 'application/json'
@@ -192,9 +192,9 @@ export default class Librespot {
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			if (!this.session) return reject('Not logged in')
-			let sequenceBuffer = Buffer.alloc(4)
+			const sequenceBuffer = Buffer.alloc(4)
 			sequenceBuffer.writeUintBE(this.keySequence, 0, 4)
-			let finalBuf = Buffer.concat([
+			const finalBuf = Buffer.concat([
 				Buffer.from(fileId, 'hex'),
 				Buffer.from(gid, 'hex'),
 				sequenceBuffer,
