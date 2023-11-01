@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import { fetch } from 'undici'
 
 export async function getRandomOf(service) {
 	const serviceReq = await fetch(

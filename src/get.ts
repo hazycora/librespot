@@ -1,4 +1,4 @@
-import fetch, { Response } from 'node-fetch'
+import { fetch, Response } from 'undici'
 import audioDecrypt from './audio/decrypt.js'
 import selectFile from './audio/selectFile.js'
 import timeout from './utils/timeout.js'
@@ -312,7 +312,7 @@ export default class LibrespotGet {
 		return {
 			hasLyrics: trackMetadata4.has_lyrics,
 			sizeBytes: parseInt(cdnResp.headers.get('content-length') ?? '0') - 0xa7,
-			stream: audioDecrypt(cdnResp.body, key)
+			stream: audioDecrypt(Readable.fromWeb(cdnResp.body), key)
 		}
 	}
 
@@ -357,7 +357,7 @@ export default class LibrespotGet {
 
 		return {
 			sizeBytes: parseInt(cdnResp.headers.get('content-length') ?? '0') - 0xa7,
-			stream: audioDecrypt(cdnResp.body, key)
+			stream: audioDecrypt(Readable.fromWeb(cdnResp.body), key)
 		}
 	}
 

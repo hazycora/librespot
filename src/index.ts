@@ -1,4 +1,4 @@
-import fetch, { Request, RequestInit, Response } from 'node-fetch'
+import { fetch, Request, RequestInit, Response } from 'undici'
 import { getRandomSpclient } from './utils/getService.js'
 import timeout from './utils/timeout.js'
 import LibrespotSession from './session/index.js'
