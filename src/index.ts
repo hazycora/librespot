@@ -58,7 +58,7 @@ export interface LibrespotOptions {
 	clientId?: string
 	deviceId?: string
 	scopes?: string[]
-	sessionOptions?: LibrespotSessionOptions
+	sessionOptions?: Partial<LibrespotSessionOptions>
 }
 
 export default class Librespot {
@@ -86,8 +86,9 @@ export default class Librespot {
 		this.deviceId = options.deviceId ?? randomBytes(20).toString('hex')
 		this.options = options
 
-		this.sessionOptions = options.sessionOptions ?? {
-			deviceId: this.deviceId
+		this.sessionOptions = {
+			deviceId: this.deviceId,
+			...(options.sessionOptions ?? {})
 		}
 	}
 
