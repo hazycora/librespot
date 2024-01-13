@@ -1,7 +1,6 @@
 # librespot-js
 
 A work-in-progress FOSS Spotify library in JavaScript inspired by [librespot](https://github.com/librespot-org/librespot/).
-This library deliberately only works with Spotify Premium accounts, requests to change or "fix" this will be ignored.
 
 ## Installation
 

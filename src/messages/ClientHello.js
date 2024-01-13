@@ -17,7 +17,7 @@ export default class ClientHello extends HandshakeMessage {
 		this.payload = {
 			buildInfo: {
 				product:
-					this.product ?? this.protoRoot.getEnum('Product').PRODUCT_PARTNER,
+					this.product ?? this.protoRoot.getEnum('Product').PRODUCT_CLIENT,
 				productFlags: this.productFlags ?? [
 					this.protoRoot.getEnum('ProductFlags').PRODUCT_FLAG_NONE
 				],
