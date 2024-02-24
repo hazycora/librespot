@@ -48,6 +48,48 @@ interface SpotifySearch {
 	episodes?: SpotifyEpisode[]
 }
 
+interface RawSpotifyHomeResponse {
+	data: {
+		home: {
+			greeting: { text: string }
+			sectionContainer: {
+				sections: RawSpotifyHomeSection
+			}
+		}
+	}
+}
+
+interface RawSpotifyHomeSection {
+	items: {
+		data: {
+			__typename: string
+			title?: { text: string }
+		}
+		sectionItems: {
+			items: {
+				content: {
+					data: (
+						| RawSpotifyTrack
+						| RawSpotifyAlbum
+						| RawSpotifyPlaylist
+						| RawSpotifyPodcast
+						| RawSpotifyEpisode
+					) & {
+						__typename:
+							| 'Playlist'
+							| 'Album'
+							| 'Podcast'
+							| 'Episode'
+							| 'Artist'
+							| 'Audiobook'
+							| 'GenericError'
+					}
+				}
+			}[]
+		}
+	}[]
+}
+
 export default class LibrespotBrowse {
 	#librespot: Librespot
 
@@ -128,47 +170,7 @@ export default class LibrespotBrowse {
 				`Error ${homeResp.status} fetching home page: ${await homeResp.text()}`
 			)
 		}
-		const resp = <
-			{
-				data: {
-					home: {
-						greeting: { text: string }
-						sectionContainer: {
-							sections: {
-								items: {
-									data: {
-										__typename: string
-										title?: { text: string }
-									}
-									sectionItems: {
-										items: {
-											content: {
-												data: (
-													| RawSpotifyTrack
-													| RawSpotifyAlbum
-													| RawSpotifyPlaylist
-													| RawSpotifyPodcast
-													| RawSpotifyEpisode
-												) & {
-													__typename:
-														| 'Playlist'
-														| 'Album'
-														| 'Podcast'
-														| 'Episode'
-														| 'Artist'
-														| 'Audiobook'
-														| 'GenericError'
-												}
-											}
-										}[]
-									}
-								}[]
-							}
-						}
-					}
-				}
-			}
-		>await homeResp.json()
+		const resp = <RawSpotifyHomeResponse>await homeResp.json()
 		return {
 			message: resp.data.home.greeting.text,
 			sections: resp.data.home.sectionContainer.sections.items
