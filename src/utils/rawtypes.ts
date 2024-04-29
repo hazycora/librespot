@@ -1,4 +1,4 @@
-import type { SpotifyThumbnail } from './types.js'
+import type { ExternalIds, SpotifyThumbnail } from './types.js'
 
 export type SpotifyTypes =
 	| 'artist'
@@ -78,6 +78,7 @@ export interface RawSpotifyTrack extends RawSpotifyObject {
 	explicit: boolean
 	is_local: boolean
 	artists: RawSpotifyArtist[]
+	external_ids?: ExternalIds
 }
 
 export interface RawSpotifyLyrics {
@@ -118,6 +119,7 @@ export interface RawSpotifyAlbum extends RawSpotifyObject {
 	images: SpotifyThumbnail[]
 	label?: string
 	tracks?: PagedResponse<RawSpotifyTrack>
+	external_ids?: ExternalIds
 }
 
 export interface RawSpotifyPlaylistTrack {

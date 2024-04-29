@@ -58,7 +58,8 @@ export function parseTrack(e: RawSpotifyTrack): SpotifyTrack {
 		uri: e.uri,
 		isLocal: e.is_local,
 		name: e.name,
-		externalUrl: e.external_urls.spotify
+		externalUrl: e.external_urls.spotify,
+		externalIds: e.external_ids ?? {}
 	}
 	if (e.artists) track.artists = e.artists.map(parseArtist)
 	if (e.album) track.album = parseAlbum(e.album)
@@ -104,7 +105,8 @@ export function parseAlbum(e: RawSpotifyAlbum): SpotifyAlbum {
 		coverArtwork: e.images,
 		id: e.id,
 		uri: e.uri,
-		externalUrl: e.external_urls.spotify
+		externalUrl: e.external_urls.spotify,
+		externalIds: e.external_ids ?? {}
 	}
 	if (e.label) album.label = e.label
 	if (e.tracks) album.tracks = e.tracks?.items.map(parseTrack)

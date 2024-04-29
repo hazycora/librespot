@@ -16,6 +16,11 @@ export interface SpotifyObject {
 	uri: string
 	externalUrl: string
 }
+export interface ExternalIds {
+	isrc?: string
+	ean?: string
+	upc?: string
+}
 export interface SpotifyThumbnail {
 	height: number | null
 	width: number | null
@@ -30,6 +35,7 @@ export interface SpotifyAlbum extends SpotifyObject {
 	totalTracks: number
 	coverArtwork: SpotifyThumbnail[]
 	label?: string
+	externalIds: ExternalIds
 }
 export interface SpotifyArtist extends SpotifyObject {
 	name: string
@@ -53,6 +59,7 @@ export interface SpotifyTrack extends SpotifyObject {
 	explicit: boolean
 	isLocal: boolean
 	name: string
+	externalIds: ExternalIds
 }
 export interface SpotifyPlaylistTrack extends SpotifyTrack {
 	addedAt: Date
