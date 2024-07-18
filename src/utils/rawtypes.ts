@@ -69,6 +69,26 @@ export interface RawSpotifyUser extends RawSpotifyObject {
 	images?: SpotifyThumbnail[]
 }
 
+export interface RawSpotifyMe extends RawSpotifyObject {
+	country: string
+	display_name: string | undefined
+	email: string
+	explicit_content: {
+		filter_enabled: boolean,
+		filter_locked: boolean
+	}
+	followers?: {
+		href: string | null
+		total: number
+	}
+	href: string,
+	id: string,
+	images?: SpotifyThumbnail[]
+	product: string,
+	type: string
+	uri: string
+}
+
 export interface RawSpotifyTrack extends RawSpotifyObject {
 	album: RawSpotifyAlbum
 	name: string

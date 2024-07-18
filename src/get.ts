@@ -13,7 +13,8 @@ import {
 	parsePodcast,
 	parseTrack,
 	parseTrackColorLyrics,
-	parseUser
+	parseUser,
+	parseMe
 } from './utils/parse.js'
 import {
 	SpotifyArtist,
@@ -24,6 +25,7 @@ import {
 	SpotifyPlaylist,
 	SpotifyPodcast,
 	SpotifyPlaylistTrack,
+	SpotifyMe,
 	QualityOption
 } from './utils/types.js'
 import {
@@ -36,7 +38,8 @@ import {
 	RawSpotifyPlaylistTrack,
 	RawSpotifyPodcast,
 	RawSpotifyTrack,
-	RawSpotifyUser
+	RawSpotifyUser,
+	RawSpotifyMe
 } from './utils/rawtypes.js'
 import { Readable } from 'stream'
 
@@ -137,6 +140,18 @@ export default class LibrespotGet {
 			...userMetadata,
 			playlists: userPlaylists
 		}
+	}
+
+	async me(): Promise<SpotifyMe> {
+		const resp = await this.#librespot.fetchWithAuth(
+			`https://api.spotify.com/v1/me`,
+			{
+				headers: {
+					Accept: 'application/json'
+				}
+			}
+		)
+		return parseMe(<RawSpotifyMe>await resp.json())
 	}
 
 	async podcastMetadata(showId: string): Promise<SpotifyPodcast> {

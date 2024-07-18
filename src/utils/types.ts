@@ -51,6 +51,16 @@ export interface SpotifyUser extends SpotifyObject {
 	avatar?: SpotifyThumbnail[]
 	playlists?: SpotifyPlaylist[]
 }
+export interface SpotifyMe extends SpotifyObject {
+	name: string | null
+	id: string
+	followerCount?: number
+	country: string
+	email: string
+	uri: string
+	plan: string
+	allowExplicit: boolean
+}
 export interface SpotifyTrack extends SpotifyObject {
 	album?: SpotifyAlbum
 	artists?: SpotifyArtist[]
