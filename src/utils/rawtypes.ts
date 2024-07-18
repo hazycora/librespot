@@ -114,6 +114,7 @@ export interface RawSpotifyAlbum extends RawSpotifyObject {
 	name: string
 	album_type: string
 	artists: RawSpotifyArtist[]
+	available_markets: string[]
 	release_date: string
 	total_tracks: number
 	images: SpotifyThumbnail[]

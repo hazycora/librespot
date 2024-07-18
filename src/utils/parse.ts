@@ -59,10 +59,11 @@ export function parseTrack(e: RawSpotifyTrack): SpotifyTrack {
 		isLocal: e.is_local,
 		name: e.name,
 		externalUrl: e.external_urls.spotify,
-		externalIds: e.external_ids ?? {}
+		externalIds: e.external_ids || {},
 	}
+	if (e.external_ids?.isrc) track.isrc = e.external_ids.isrc
 	if (e.artists) track.artists = e.artists.map(parseArtist)
-	if (e.album) track.album = parseAlbum(e.album)
+	if (e.album) track.album = parseAlbum(e.album) 
 	return track
 }
 
@@ -98,6 +99,7 @@ export function parseTrackColorLyrics(
 export function parseAlbum(e: RawSpotifyAlbum): SpotifyAlbum {
 	const album: SpotifyAlbum = {
 		albumType: e.album_type,
+		availableMarkets: e.available_markets,
 		artists: e.artists.map(parseArtist),
 		name: e.name,
 		releaseDate: new Date(e.release_date),
