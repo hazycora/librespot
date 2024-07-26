@@ -24,7 +24,7 @@ export default class ClientHello extends HandshakeMessage {
 				platform:
 					this.platform ??
 					this.protoRoot.getEnum('Platform').PLATFORM_LINUX_X86,
-				version: 0x10800000000
+				version: 117300517
 			},
 			cryptosuitesSupported: [
 				this.protoRoot.getEnum('Cryptosuite').CRYPTO_SUITE_SHANNON
