@@ -8,6 +8,7 @@ import LibrespotPlayer from './player.js'
 import { randomBytes } from 'crypto'
 import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
 import { PagedResponse } from './utils/rawtypes.js'
+import Login5Client from './session/login5.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -32,21 +33,12 @@ class LibrespotToken {
 	accessToken: string
 	expiresIn: number
 	createdAt: number
-	tokenType: 'Bearer'
-	scopes: string[]
-	permissions: number[]
 	constructor(token: {
 		accessToken: string
-		expiresIn: number
-		tokenType: 'Bearer'
-		scope: string[]
-		permissions: number[]
+		accessTokenExpiresIn: number
 	}) {
 		this.accessToken = token.accessToken
-		this.expiresIn = token.expiresIn
-		this.tokenType = token.tokenType
-		this.scopes = token.scope
-		this.permissions = token.permissions
+		this.expiresIn = token.accessTokenExpiresIn
 		this.createdAt = Date.now()
 	}
 	isExpired() {
@@ -64,6 +56,7 @@ export interface LibrespotOptions {
 export default class Librespot {
 	options: LibrespotOptions
 	session?: LibrespotSession
+	login5?: Login5Client
 	credentials?: {
 		username: string
 		password: string
@@ -77,7 +70,7 @@ export default class Librespot {
 
 	constructor(options: LibrespotOptions) {
 		options = {
-			clientId: '65b708073fc0480ea92a077233ca87bd',
+			clientId: '9a8d2f0ce77a4e248bb71fefcb557637',
 			scopes: defaultScopes,
 			...options
 		}
@@ -98,9 +91,11 @@ export default class Librespot {
 			username,
 			password
 		}
+		this.login5 = new Login5Client(this.options.clientId!)
+		const loginResponse = await this.login5.login(username, password)
 		this.session = new LibrespotSession(this.sessionOptions)
-		await this.session.setup(username, password)
-		this.token = await this.getToken(this.options.scopes)
+		await this.session.setup(loginResponse.username, loginResponse.storedCredential)
+		this.token = new LibrespotToken(loginResponse)
 		if (this.isPremium()) this.maxQuality = 2
 	}
 
@@ -123,22 +118,14 @@ export default class Librespot {
 		return this.getAttribute('type') == 'premium'
 	}
 
-	async getToken(scopes?: string[]): Promise<LibrespotToken> {
+	async getToken(): Promise<LibrespotToken> {
 		if (!this.session) throw new Error('Not logged in')
-		scopes = scopes || defaultScopes
 		if (this.token && !this.token.isExpired()) {
-			if (this.token.scopes.every(scope => scopes?.includes(scope))) {
-				return this.token
-			}
+			return this.token
 		}
-		const keymasterResponse = await this.session.sendMercuryRequest({
-			uri: `hm://keymaster/token/authenticated?scope=${scopes.join(
-				','
-			)}&client_id=${this.options.clientId}&device_id=${this.deviceId}`,
-			method: 'GET'
-		})
-		const tokenResponse = JSON.parse(keymasterResponse.payloads?.[0].toString())
-		return new LibrespotToken(tokenResponse)
+		const tokenResponse = await this.login5?.refresh()
+		this.token = new LibrespotToken(tokenResponse)
+		return this.token
 	}
 
 	async fetchWithAuth(
@@ -154,7 +141,7 @@ export default class Librespot {
 		init = init ?? {}
 		init.headers = (init.headers ?? {}) as { [key: string]: string }
 		init.headers['Authorization'] = `Bearer ${
-			(await this.getToken(defaultScopes)).accessToken
+			(await this.getToken()).accessToken
 		}`
 		const resp = <Response>await timeout(fetch(resource, init))
 		if (!resp.ok) {
