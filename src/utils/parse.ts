@@ -1,6 +1,7 @@
 import {
 	RawSpotifyAlbum,
 	RawSpotifyArtist,
+	RawSpotifyAuthResponse,
 	RawSpotifyColorLyrics,
 	RawSpotifyEpisode,
 	RawSpotifyLyrics,
@@ -25,6 +26,17 @@ import {
 	SpotifyMe
 } from './types.js'
 
+export function parseAuthorization(e: RawSpotifyAuthResponse) {
+	return {
+		accessToken: e.access_token,
+		tokenType: e.token_type,
+		expiresAt: new Date(Date.now() + e.expires_in * 1000),
+		refreshToken: e.refresh_token,
+		scopes: e.scope.split(' '),
+		username: e.username
+	}
+}
+
 export function parseUser(e: RawSpotifyUser): SpotifyUser {
 	const user: SpotifyUser = {
 		name: e.display_name,
@@ -44,10 +56,11 @@ export function parseMe(e: RawSpotifyMe): SpotifyMe {
 		followerCount: e.followers?.total,
 		country: e.country,
 		email: e.email,
-		externalUrl: e.external_urls.spotify || `https://open.spotify.com/user/${e.id}`,
+		externalUrl:
+			e.external_urls.spotify || `https://open.spotify.com/user/${e.id}`,
 		uri: e.uri,
 		plan: e.product,
-		allowExplicit: !(e.explicit_content.filter_enabled)
+		allowExplicit: !e.explicit_content.filter_enabled
 	}
 }
 

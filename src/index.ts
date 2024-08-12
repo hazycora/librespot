@@ -7,7 +7,10 @@ import LibrespotGet from './get.js'
 import LibrespotPlayer from './player.js'
 import { randomBytes } from 'crypto'
 import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
-import { PagedResponse } from './utils/rawtypes.js'
+import { PagedResponse, RawSpotifyAuthResponse } from './utils/rawtypes.js'
+import { text } from '@clack/prompts'
+import { generateCodeChallenge, generateRandomString } from './utils/random.js'
+import { parseAuthorization } from './utils/parse.js'
 
 const defaultScopes = [
 	'user-read-playback-state',
@@ -29,28 +32,26 @@ const defaultScopes = [
 ]
 
 class LibrespotToken {
+	username: string
 	accessToken: string
-	expiresIn: number
-	createdAt: number
+	expiresAt: Date
 	tokenType: 'Bearer'
 	scopes: string[]
-	permissions: number[]
 	constructor(token: {
+		username: string
 		accessToken: string
-		expiresIn: number
+		expiresAt: Date
 		tokenType: 'Bearer'
-		scope: string[]
-		permissions: number[]
+		scopes: string[]
 	}) {
+		this.username = token.username
 		this.accessToken = token.accessToken
-		this.expiresIn = token.expiresIn
+		this.expiresAt = token.expiresAt
 		this.tokenType = token.tokenType
-		this.scopes = token.scope
-		this.permissions = token.permissions
-		this.createdAt = Date.now()
+		this.scopes = token.scopes
 	}
 	isExpired() {
-		return Date.now() > this.createdAt + this.expiresIn * 1000
+		return Date.now() > this.expiresAt.getTime()
 	}
 }
 
@@ -61,13 +62,18 @@ export interface LibrespotOptions {
 	sessionOptions?: Partial<LibrespotSessionOptions>
 }
 
+export interface LibrespotCredentials {
+	username: string
+	accessToken: string
+	refreshToken: string
+	expiresAt: Date
+	scopes?: string[]
+}
+
 export default class Librespot {
 	options: LibrespotOptions
 	session?: LibrespotSession
-	credentials?: {
-		username: string
-		password: string
-	}
+	credentials?: LibrespotCredentials
 	token?: LibrespotToken
 	deviceId: string
 	spclient?: string
@@ -75,7 +81,7 @@ export default class Librespot {
 	sessionOptions: LibrespotSessionOptions
 	maxQuality: QualityOption = 1
 
-	constructor(options: LibrespotOptions) {
+	constructor(options: LibrespotOptions, credentials?: LibrespotCredentials) {
 		options = {
 			clientId: '65b708073fc0480ea92a077233ca87bd',
 			scopes: defaultScopes,
@@ -85,6 +91,9 @@ export default class Librespot {
 		this.session = undefined
 		this.deviceId = options.deviceId ?? randomBytes(20).toString('hex')
 		this.options = options
+		if (credentials) {
+			this.credentials = credentials
+		}
 
 		this.sessionOptions = {
 			deviceId: this.deviceId,
@@ -92,21 +101,106 @@ export default class Librespot {
 		}
 	}
 
-	async login(username: string, password: string) {
-		this.spclient = await getRandomSpclient()
-		this.credentials = {
-			username,
-			password
+	async oauthGetUrl(scopes = defaultScopes) {
+		const scope = scopes.join(' ')
+		const clientId = `${this.options.clientId}`
+		const redirectUri = `http://127.0.0.1/login`
+
+		const { codeVerifier, codeChallenge } = await generateCodeChallenge()
+
+		const params = new URLSearchParams({
+			response_type: 'code',
+			client_id: clientId,
+			scope,
+			code_challenge_method: 'S256',
+			code_challenge: codeChallenge,
+			redirect_uri: redirectUri
+		})
+		const url = `https://accounts.spotify.com/authorize?${params.toString()}`
+		return { url, codeVerifier, redirectUri }
+	}
+
+	async oauthGetToken(
+		code: string,
+		codeVerifier: string,
+		redirectUri = `http://127.0.0.1/login`
+	) {
+		const clientId = `${this.options.clientId}`
+		const resp = await fetch('https://accounts.spotify.com/api/token', {
+			method: 'post',
+			body: new URLSearchParams({
+				grant_type: 'authorization_code',
+				client_id: clientId,
+				code: code.toString(),
+				code_verifier: codeVerifier,
+				redirect_uri: redirectUri
+			}),
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			}
+		})
+
+		const respJson = <RawSpotifyAuthResponse>await resp.json()
+		return parseAuthorization(respJson)
+	}
+
+	async login() {
+		const clientId = `${this.options.clientId}`
+		if (this.credentials?.refreshToken) {
+			const resp = await fetch('https://accounts.spotify.com/api/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({
+					grant_type: 'refresh_token',
+					refresh_token: this.credentials.refreshToken,
+					client_id: clientId
+				})
+			})
+			const authResponse = <RawSpotifyAuthResponse>await resp.json()
+			const authorization = parseAuthorization(authResponse)
+			this.token = new LibrespotToken(authorization)
+			await this.connectToSP()
+			return
 		}
+		const { url, codeVerifier, redirectUri } = await this.oauthGetUrl()
+		console.log('Visit:', url)
+		console.log('Then copy the code at the destination URL')
+		let codeAnswer = await text({
+			message: 'What is your code?'
+		}).then(code => code.toString())
+
+		let code: string
+		if (codeAnswer.startsWith('http://') || codeAnswer.startsWith('https://')) {
+			const answerUrl = new URL(codeAnswer)
+			code = answerUrl.searchParams.get('code') || ''
+		} else {
+			code = codeAnswer
+		}
+
+		const authorization = await this.oauthGetToken(
+			code,
+			codeVerifier,
+			redirectUri
+		)
+		this.token = new LibrespotToken(authorization)
+		console.log(authorization)
+		await this.connectToSP()
+	}
+
+	async connectToSP() {
+		if (!this.token) throw new Error('Not logged in')
+		this.spclient = await getRandomSpclient()
 		this.session = new LibrespotSession(this.sessionOptions)
-		await this.session.setup(username, password)
-		this.token = await this.getToken(this.options.scopes)
+		await this.session.setup(this.token.username, this.token.accessToken)
+		this.token = await this.getToken()
 		if (this.isPremium()) this.maxQuality = 2
 	}
 
 	async relogin() {
 		if (!this.credentials) throw new Error('No credentials')
-		return this.login(this.credentials.username, this.credentials.password)
+		return this.login()
 	}
 
 	async disconnect() {
@@ -123,22 +217,13 @@ export default class Librespot {
 		return this.getAttribute('type') == 'premium'
 	}
 
-	async getToken(scopes?: string[]): Promise<LibrespotToken> {
+	async getToken(): Promise<LibrespotToken> {
 		if (!this.session) throw new Error('Not logged in')
-		scopes = scopes || defaultScopes
 		if (this.token && !this.token.isExpired()) {
-			if (this.token.scopes.every(scope => scopes?.includes(scope))) {
-				return this.token
-			}
+			return this.token
 		}
-		const keymasterResponse = await this.session.sendMercuryRequest({
-			uri: `hm://keymaster/token/authenticated?scope=${scopes.join(
-				','
-			)}&client_id=${this.options.clientId}&device_id=${this.deviceId}`,
-			method: 'GET'
-		})
-		const tokenResponse = JSON.parse(keymasterResponse.payloads?.[0].toString())
-		return new LibrespotToken(tokenResponse)
+		await this.login()
+		return this.token!
 	}
 
 	async fetchWithAuth(
@@ -154,7 +239,7 @@ export default class Librespot {
 		init = init ?? {}
 		init.headers = (init.headers ?? {}) as { [key: string]: string }
 		init.headers['Authorization'] = `Bearer ${
-			(await this.getToken(defaultScopes)).accessToken
+			(await this.getToken()).accessToken
 		}`
 		const resp = <Response>await timeout(fetch(resource, init))
 		if (!resp.ok) {

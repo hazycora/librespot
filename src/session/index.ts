@@ -75,7 +75,7 @@ export default class LibrespotSession extends EventEmitter {
 		this.client.destroy()
 	}
 
-	async setup(username: string, password: string) {
+	async setup(username: string, token: string) {
 		let address = this.address
 		let port = this.port
 		if (!address || !port) {
@@ -96,8 +96,8 @@ export default class LibrespotSession extends EventEmitter {
 
 		const credentials: Credentials = {
 			username,
-			auth_type: 0,
-			auth_data: Buffer.from(password, 'utf-8'),
+			auth_type: 3,
+			auth_data: Buffer.from(token, 'utf-8'),
 			device_id: this.deviceId
 		}
 

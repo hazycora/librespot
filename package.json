@@ -36,6 +36,7 @@
 	"author": "hazycora",
 	"license": "MIT",
 	"dependencies": {
+		"@clack/prompts": "^0.7.0",
 		"fast-xml-parser": "^4.3.2",
 		"protobufjs": "^7.2.5",
 		"shannon-bindings": "^0.1.0",

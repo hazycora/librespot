@@ -13,11 +13,10 @@ export default class ClientResponseEncrypted extends Message {
 				authData: credentials.auth_data
 			},
 			systemInfo: {
-				os: 0x00,
-				cpuFamily: 0x00,
-				informationString: 'spotify_js',
-				deviceId: credentials.device_id,
-				versionString: '0.0.1'
+				os: 1,
+				cpuFamily: 2,
+				informationString: 'spotify',
+				deviceId: credentials.device_id
 			},
 			versionString: '0.0.1'
 		}
