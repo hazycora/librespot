@@ -64,6 +64,7 @@ export default class Librespot {
 	keySequence: number = 0
 	sessionOptions: LibrespotSessionOptions
 	maxQuality: QualityOption = 1
+	premium?: boolean
 
 	constructor(options: LibrespotOptions) {
 		options = {
@@ -115,7 +116,10 @@ export default class Librespot {
 	}
 
 	async isPremium() {
-		return (await this.get.me()).plan == 'premium'
+		if (typeof this.premium == 'boolean') return this.premium
+		const check = (await this.get.me()).plan == 'premium'
+		this.premium = check
+		return check
 	}
 
 	async getToken(): Promise<LibrespotToken> {
