@@ -74,17 +74,17 @@ export interface RawSpotifyMe extends RawSpotifyObject {
 	display_name: string | undefined
 	email: string
 	explicit_content: {
-		filter_enabled: boolean,
+		filter_enabled: boolean
 		filter_locked: boolean
 	}
 	followers?: {
 		href: string | null
 		total: number
 	}
-	href: string,
-	id: string,
+	href: string
+	id: string
 	images?: SpotifyThumbnail[]
-	product: string,
+	product: string
 	type: string
 	uri: string
 }

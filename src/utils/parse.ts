@@ -44,10 +44,11 @@ export function parseMe(e: RawSpotifyMe): SpotifyMe {
 		followerCount: e.followers?.total,
 		country: e.country,
 		email: e.email,
-		externalUrl: e.external_urls.spotify || `https://open.spotify.com/user/${e.id}`,
+		externalUrl:
+			e.external_urls.spotify || `https://open.spotify.com/user/${e.id}`,
 		uri: e.uri,
 		plan: e.product,
-		allowExplicit: !(e.explicit_content.filter_enabled)
+		allowExplicit: !e.explicit_content.filter_enabled
 	}
 }
 

@@ -4,8 +4,6 @@ import Shannon from 'shannon-bindings'
 import Client from './client.js'
 import logger from '../utils/logger.js'
 import handler from './handler.js'
-import MercuryManager from '../mercury/MercuryManager.js'
-import MercuryMessage from '../mercury/MercuryMessage.js'
 import { getRandomAP } from '../utils/getService.js'
 
 import {
@@ -45,7 +43,6 @@ export default class LibrespotSession extends EventEmitter {
 	diffie: crypto.DiffieHellmanGroup
 	send: ShannonObject
 	recv: ShannonObject
-	mercury: MercuryManager
 	destroyed: boolean
 	handshakeOptions?: HandshakeOptions
 	setupComplete: boolean
@@ -65,7 +62,6 @@ export default class LibrespotSession extends EventEmitter {
 		this.recv = {
 			nonce: 0
 		}
-		this.mercury = new MercuryManager(this)
 		this.setupComplete = false
 	}
 
@@ -253,18 +249,5 @@ export default class LibrespotSession extends EventEmitter {
 		payload = Buffer.concat([payload, mac])
 
 		return this.client.write(payload)
-	}
-
-	sendMercuryRequest(
-		options: unknown,
-		payloads?: unknown
-	): Promise<MercuryMessage> {
-		return new Promise(resolve => {
-			this.mercury.send(options, payloads, resolve)
-		})
-	}
-
-	parseMercuryRequest(payload: unknown) {
-		return this.mercury.parse(payload)
 	}
 }

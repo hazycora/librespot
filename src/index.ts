@@ -33,10 +33,7 @@ class LibrespotToken {
 	accessToken: string
 	expiresIn: number
 	createdAt: number
-	constructor(token: {
-		accessToken: string
-		accessTokenExpiresIn: number
-	}) {
+	constructor(token: { accessToken: string; accessTokenExpiresIn: number }) {
 		this.accessToken = token.accessToken
 		this.expiresIn = token.accessTokenExpiresIn
 		this.createdAt = Date.now()
@@ -94,7 +91,10 @@ export default class Librespot {
 		this.login5 = new Login5Client(this.options.clientId!)
 		const loginResponse = await this.login5.login(username, password)
 		this.session = new LibrespotSession(this.sessionOptions)
-		await this.session.setup(loginResponse.username, loginResponse.storedCredential)
+		await this.session.setup(
+			loginResponse.username,
+			loginResponse.storedCredential
+		)
 		this.token = new LibrespotToken(loginResponse)
 		if (this.isPremium()) this.maxQuality = 2
 	}
