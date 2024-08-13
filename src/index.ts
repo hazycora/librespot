@@ -96,7 +96,7 @@ export default class Librespot {
 			loginResponse.storedCredential
 		)
 		this.token = new LibrespotToken(loginResponse)
-		if (this.isPremium()) this.maxQuality = 2
+		if (await (this.isPremium())) this.maxQuality = 2
 	}
 
 	async relogin() {
@@ -114,8 +114,8 @@ export default class Librespot {
 		return this.session.attributes[attribute]
 	}
 
-	isPremium() {
-		return this.getAttribute('type') == 'premium'
+	async isPremium() {
+		return (await this.get.me()).plan == 'premium'
 	}
 
 	async getToken(): Promise<LibrespotToken> {
