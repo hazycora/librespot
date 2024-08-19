@@ -74,7 +74,7 @@ export default class Librespot {
 		}
 		this.keySequence = 0
 		this.session = undefined
-		this.deviceId = options.deviceId ?? randomBytes(20).toString('hex')
+		this.deviceId = options.deviceId ?? randomBytes(8).toString('hex')
 		this.options = options
 
 		this.sessionOptions = {
@@ -89,7 +89,7 @@ export default class Librespot {
 			username,
 			password
 		}
-		this.login5 = new Login5Client(this.options.clientId!)
+		this.login5 = new Login5Client(this.options.clientId!, this.deviceId)
 		const loginResponse = await this.login5.login(username, password)
 		this.session = new LibrespotSession(this.sessionOptions)
 		await this.session.setup(

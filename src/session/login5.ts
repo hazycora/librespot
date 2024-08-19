@@ -11,14 +11,16 @@ interface Login5Credentials {
 
 export default class Login5Client {
 	clientId: string
+	deviceId: string
 	init = false
 	loginRequest: LoginRequest = new LoginRequest()
 	loginResponse: LoginResponse = new LoginResponse()
 
 	refreshCredentials?: Login5Credentials
 
-	constructor(clientId: string) {
+	constructor(clientId: string, deviceId: string) {
 		this.clientId = clientId
+		this.deviceId = deviceId
 	}
 
 	async login(username: string, password: string) {
@@ -39,6 +41,7 @@ export default class Login5Client {
 	async #flow(credentials: Login5Credentials) {
 		const params = {
 			client_id: this.clientId,
+			device_id: this.deviceId,
 			credentials
 		}
 
@@ -56,6 +59,7 @@ export default class Login5Client {
 
 			const params = {
 				client_id: this.clientId,
+				device_id: this.deviceId,
 				login_context: loginContext,
 				credentials,
 				solutions: [solution]
@@ -63,7 +67,41 @@ export default class Login5Client {
 
 			const resp = await this.call(params)
 			if (resp.ok) return resp.ok
+			else if ('error' in resp) this.handleError(resp.error)
+			else if (resp.challenges) throw new Error("Multiple challenges received")
 		} else if (response.ok) return response.ok
+		else if ('error' in response) this.handleError(response.error)
+	}
+
+	handleError(error: number) {
+		let description = 'Unknown error'
+		switch (error) {
+			case 1:
+				description = 'Invalid credentials'
+				break
+			case 2:
+				description = 'Bad request'
+				break
+			case 3:
+				description = 'Unsupported login protocol'
+				break
+			case 4:
+				description = 'Timeout'
+				break
+			case 5:
+				description = 'Unknown identifier'
+				break
+			case 6:
+				description = 'Too many attempts'
+				break
+			case 7:
+				description = 'Invalid phone number'
+				break
+			case 8:
+				description = 'Try again later'
+				break
+		}
+		throw new Error(description)
 	}
 
 	async call(params: object) {
@@ -75,7 +113,11 @@ export default class Login5Client {
 
 		this.loginRequest.from(params)
 		const encodedRequest = this.loginRequest.encode()
-		const resp = await fetch(URL, { method: 'POST', body: encodedRequest })
+		const resp = await fetch(URL, { method: 'POST', body: encodedRequest, headers: {
+			'accept': 'application/x-protobuf',
+			'cache-control': 'no-cache, no-store, max-age=0',
+			'user-agent': 'Spotify/8.9.66.543 Android/34 (sdk_gphone64_x86_64)'
+		} })
 		this.loginResponse.from(Buffer.from(await resp.arrayBuffer()))
 		return this.loginResponse.payload
 	}

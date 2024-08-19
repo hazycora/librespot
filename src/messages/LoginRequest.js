@@ -8,7 +8,8 @@ export default class LoginRequest extends Message {
 	fromObject(params) {
 		this.payload = {
 			clientInfo: {
-				clientId: params.client_id
+				clientId: params.client_id,
+				deviceId: params.device_id
 			}
 		}
 		if (params.login_context) {
