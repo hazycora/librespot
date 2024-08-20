@@ -308,10 +308,13 @@ export default class LibrespotGet {
 				}
 			)
 		).json()
+
 		if (!trackMetadata4.file && trackMetadata4.alternative)
 			trackMetadata4 = trackMetadata4.alternative
+		if (Array.isArray(trackMetadata4)) trackMetadata4 = trackMetadata4[0]
 		if (!trackMetadata4 || !trackMetadata4.file)
 			throw new Error('Could not get file')
+
 		const resp = await this.#librespot.fetchWithAuth(
 			`/storage-resolve/files/audio/interactive/${
 				selectFile(
