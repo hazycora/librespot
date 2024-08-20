@@ -22,7 +22,8 @@
 		"./package.json": "./package.json",
 		".": {
 			"types": "./build/index.d.ts",
-			"import": "./build/index.js"
+			"import": "./build/index.js",
+			"default": "./build/index.js"
 		},
 		"./types": {
 			"types": "./build/utils/types.d.ts",
