@@ -106,7 +106,7 @@ export default class Librespot {
 	}
 
 	async disconnect() {
-		if (!this.session) throw new Error('Not logged in')
+		if (!this.session) return
 		return this.session.close()
 	}
 
