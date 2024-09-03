@@ -10,25 +10,6 @@ import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
 import { PagedResponse } from './utils/rawtypes.js'
 import Login5Client from './session/login5.js'
 
-const defaultScopes = [
-	'user-read-playback-state',
-	'user-read-private',
-	'user-read-birthdate',
-	'user-read-email',
-	'playlist-read-private',
-	'user-library-read',
-	'user-library-modify',
-	'user-top-read',
-	'playlist-read-collaborative',
-	'playlist-modify-public',
-	'playlist-modify-private',
-	'user-follow-read',
-	'user-follow-modify',
-	'user-read-currently-playing',
-	'user-modify-playback-state',
-	'user-read-recently-played'
-]
-
 class LibrespotToken {
 	accessToken: string
 	expiresIn: number
@@ -46,7 +27,6 @@ class LibrespotToken {
 export interface LibrespotOptions {
 	clientId?: string
 	deviceId?: string
-	scopes?: string[]
 	sessionOptions?: Partial<LibrespotSessionOptions>
 }
 
@@ -69,7 +49,6 @@ export default class Librespot {
 	constructor(options: LibrespotOptions) {
 		options = {
 			clientId: '9a8d2f0ce77a4e248bb71fefcb557637',
-			scopes: defaultScopes,
 			...options
 		}
 		this.keySequence = 0
