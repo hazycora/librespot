@@ -68,7 +68,7 @@ export default class Librespot {
 
 	constructor(options: LibrespotOptions) {
 		options = {
-			clientId: '65b708073fc0480ea92a077233ca87bd',
+			clientId: '9a8d2f0ce77a4e248bb71fefcb557637',
 			scopes: defaultScopes,
 			...options
 		}
