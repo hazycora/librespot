@@ -163,17 +163,32 @@ export default class Librespot {
 	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			if (!this.session) return reject('Not logged in')
+			const sequenceNum = this.keySequence
 			const sequenceBuffer = Buffer.alloc(4)
-			sequenceBuffer.writeUintBE(this.keySequence, 0, 4)
+			sequenceBuffer.writeUintBE(sequenceNum, 0, 4)
 			const finalBuf = Buffer.concat([
 				Buffer.from(fileId, 'hex'),
 				Buffer.from(gid, 'hex'),
 				sequenceBuffer,
 				Buffer.from([0x00, 0x00])
 			])
-			this.session.once('aes-key', e => {
-				resolve(e.payload.subarray(4, e.payload.length))
-			})
+
+			const keyListener = (e: { sequenceNum: number, key: Buffer }) => {
+				if (e.sequenceNum != sequenceNum) return
+				this.session!.off('aes-key', keyListener)
+				this.session!.off('aes-key-error', errorListener)
+				resolve(e.key)
+			}
+
+			const errorListener = (e: { sequenceNum: number, code1: number, code2: number }) => {
+				if (e.sequenceNum != sequenceNum) return
+				this.session!.off('aes-key', keyListener)
+				this.session!.off('aes-key-error', errorListener)
+				reject(`Audio key error, codes: ${e.code1} ${e.code2}`)
+			}
+
+			this.session.on('aes-key', keyListener)
+			this.session.on('aes-key-error', errorListener)
 			this.keySequence += 1
 			this.session.sendCommand(0x0c, finalBuf)
 		})
