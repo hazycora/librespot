@@ -3,7 +3,7 @@ import LoginResponse from '../messages/LoginResponse.js'
 
 const URL = 'https://login5.spotify.com/v3/login'
 
-interface Login5Credentials {
+export interface Login5Credentials {
 	username: string
 	password?: string
 	stored_credential?: Buffer
@@ -23,8 +23,8 @@ export default class Login5Client {
 		this.deviceId = deviceId
 	}
 
-	async login(username: string, password: string) {
-		const response = await this.#flow({ username, password })
+	async login(credentials: Login5Credentials) {
+		const response = await this.#flow(credentials)
 		this.refreshCredentials = {
 			username: response.username,
 			stored_credential: response.storedCredential

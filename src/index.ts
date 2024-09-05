@@ -8,7 +8,7 @@ import LibrespotPlayer from './player.js'
 import { randomBytes } from 'crypto'
 import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
 import { PagedResponse } from './utils/rawtypes.js'
-import Login5Client from './session/login5.js'
+import Login5Client, { Login5Credentials } from './session/login5.js'
 import PlayPlayClient from './playplay.js'
 
 class LibrespotToken {
@@ -35,10 +35,7 @@ export default class Librespot {
 	options: LibrespotOptions
 	session?: LibrespotSession
 	login5?: Login5Client
-	credentials?: {
-		username: string
-		password: string
-	}
+	credentials?: Login5Credentials
 	token?: LibrespotToken
 	deviceId: string
 	spclient?: string
@@ -64,13 +61,25 @@ export default class Librespot {
 	}
 
 	async login(username: string, password: string) {
-		this.spclient = await getRandomSpclient()
 		this.credentials = {
 			username,
 			password
 		}
+		return await this.setupSession(this.credentials)
+	}
+
+	async loginWithStoredCreds(username: string, storedCredential: string) {
+		this.credentials = {
+			username,
+			stored_credential: Buffer.from(storedCredential)
+		}
+		return await this.setupSession(this.credentials)
+	}
+
+	async setupSession(credentials: Login5Credentials) {
+		this.spclient = await getRandomSpclient()
 		this.login5 = new Login5Client(this.options.clientId!, this.deviceId)
-		const loginResponse = await this.login5.login(username, password)
+		const loginResponse = await this.login5.login(credentials)
 		this.session = new LibrespotSession(this.sessionOptions)
 		await this.session.setup(
 			loginResponse.username,
@@ -82,7 +91,7 @@ export default class Librespot {
 
 	async relogin() {
 		if (!this.credentials) throw new Error('No credentials')
-		return this.login(this.credentials.username, this.credentials.password)
+		return await this.setupSession(this.credentials)
 	}
 
 	async disconnect() {
