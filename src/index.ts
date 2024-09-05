@@ -9,6 +9,7 @@ import { randomBytes } from 'crypto'
 import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
 import { PagedResponse } from './utils/rawtypes.js'
 import Login5Client from './session/login5.js'
+import PlayPlayClient from './playplay.js'
 
 class LibrespotToken {
 	accessToken: string
@@ -160,43 +161,11 @@ export default class Librespot {
 		return items
 	}
 
-	getAudioKey(fileId: string, gid: string): Promise<Buffer> {
-		return new Promise((resolve, reject) => {
-			if (!this.session) return reject('Not logged in')
-			const sequenceNum = this.keySequence
-			const sequenceBuffer = Buffer.alloc(4)
-			sequenceBuffer.writeUintBE(sequenceNum, 0, 4)
-			const finalBuf = Buffer.concat([
-				Buffer.from(fileId, 'hex'),
-				Buffer.from(gid, 'hex'),
-				sequenceBuffer,
-				Buffer.from([0x00, 0x00])
-			])
-
-			const keyListener = (e: { sequenceNum: number, key: Buffer }) => {
-				if (e.sequenceNum != sequenceNum) return
-				this.session!.off('aes-key', keyListener)
-				this.session!.off('aes-key-error', errorListener)
-				resolve(e.key)
-			}
-
-			const errorListener = (e: { sequenceNum: number, code1: number, code2: number }) => {
-				if (e.sequenceNum != sequenceNum) return
-				this.session!.off('aes-key', keyListener)
-				this.session!.off('aes-key-error', errorListener)
-				reject(`Audio key error, codes: ${e.code1} ${e.code2}`)
-			}
-
-			this.session.on('aes-key', keyListener)
-			this.session.on('aes-key-error', errorListener)
-			this.keySequence += 1
-			this.session.sendCommand(0x0c, finalBuf)
-		})
-	}
-
 	browse = new LibrespotBrowse(this)
 
 	get = new LibrespotGet(this)
 
 	player = new LibrespotPlayer(this)
+
+	playplay = new PlayPlayClient(this)
 }

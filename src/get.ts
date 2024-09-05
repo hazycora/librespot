@@ -330,10 +330,7 @@ export default class LibrespotGet {
 			}
 		)
 		const data = <RawSpotifyFileResponse>await resp.json()
-		const key = await this.#librespot.getAudioKey(
-			data.fileid,
-			trackMetadata4.gid
-		)
+		const key = await this.#librespot.playplay.getAudioKey(data.fileid, 1)
 		const cdnUrls = filterCDNs(data.cdnurl)
 		const cdnUrl = cdnUrls[Math.round(Math.random() * (cdnUrls.length - 1))]
 		const cdnResp = <Response>await timeout(fetch(cdnUrl))
@@ -376,10 +373,7 @@ export default class LibrespotGet {
 			}
 		)
 		const data = <RawSpotifyFileResponse>await resp.json()
-		const key = await this.#librespot.getAudioKey(
-			data.fileid,
-			trackMetadata4.gid
-		)
+		const key = await this.#librespot.playplay.getAudioKey(data.fileid, 2)
 		const cdnUrls = filterCDNs(data.cdnurl)
 		const cdnUrl = cdnUrls[Math.round(Math.random() * (cdnUrls.length - 1))]
 		const cdnResp = <Response>await timeout(fetch(cdnUrl))

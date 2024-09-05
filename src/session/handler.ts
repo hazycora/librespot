@@ -46,15 +46,10 @@ export default async function ({
 			// Mercury (unsupported)
 			break
 		case 0x0d:
-			const sequenceNum = payload.readUInt32BE(0)
-			const key = payload.subarray(4, payload.length)
-			session.emit('aes-key', { sequenceNum, key })
+			// Audio key (unsupported)
 			break
 		case 0x0e:
-			const seq = payload.readUInt32BE(0)
-			const code1 = payload[4]
-			const code2 = payload[5]
-			session.emit('aes-key-error', { sequenceNum: seq, code1, code2 })
+			// Audio key error (unsupported)
 			break
 	}
 }

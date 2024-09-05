@@ -20,10 +20,13 @@ importers:
       undici:
         specifier: ^5.27.0
         version: 5.27.0
+      unplayplay:
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.9.1
-        version: 6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@4.9.5)
+        version: 6.9.1(@typescript-eslint/parser@6.9.1(eslint@8.52.0)(typescript@4.9.5))(eslint@8.52.0)(typescript@4.9.5)
       '@typescript-eslint/parser':
         specifier: ^6.9.1
         version: 6.9.1(eslint@8.52.0)(typescript@4.9.5)
@@ -480,6 +483,10 @@ packages:
   node-addon-api@1.7.2:
     resolution: {integrity: sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==}
 
+  node-addon-api@8.1.0:
+    resolution: {integrity: sha512-yBY+qqWSv3dWKGODD6OGE6GnTX7Q2r+4+DfpqxHSHh8x0B4EKP9+wVGLS6U/AM1vxSNNmUEuIV5EGhYwPpfOwQ==}
+    engines: {node: ^18 || ^20 || >= 21}
+
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
@@ -622,6 +629,9 @@ packages:
     resolution: {integrity: sha512-l3ydWhlhOJzMVOYkymLykcRRXqbUaQriERtR70B9LzNkZ4bX52Fc8wbTDneMiwo8T+AemZXvXaTx+9o5ROxrXg==}
     engines: {node: '>=14.0'}
 
+  unplayplay@1.0.0:
+    resolution: {integrity: sha512-ukQX79Ze9I4+gZARvyQY36ZRkkoFrzvDZmzL39DCODvFjRARVjo+hD/azDBkIa3b73tmd8hKMszrQzfi7hi+SQ==}
+
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
@@ -724,7 +734,7 @@ snapshots:
 
   '@types/semver@7.5.4': {}
 
-  '@typescript-eslint/eslint-plugin@6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@4.9.5)':
+  '@typescript-eslint/eslint-plugin@6.9.1(@typescript-eslint/parser@6.9.1(eslint@8.52.0)(typescript@4.9.5))(eslint@8.52.0)(typescript@4.9.5)':
     dependencies:
       '@eslint-community/regexpp': 4.10.0
       '@typescript-eslint/parser': 6.9.1(eslint@8.52.0)(typescript@4.9.5)
@@ -739,6 +749,7 @@ snapshots:
       natural-compare: 1.4.0
       semver: 7.5.4
       ts-api-utils: 1.0.3(typescript@4.9.5)
+    optionalDependencies:
       typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
@@ -751,6 +762,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 6.9.1
       debug: 4.3.4
       eslint: 8.52.0
+    optionalDependencies:
       typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
@@ -767,6 +779,7 @@ snapshots:
       debug: 4.3.4
       eslint: 8.52.0
       ts-api-utils: 1.0.3(typescript@4.9.5)
+    optionalDependencies:
       typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
@@ -782,6 +795,7 @@ snapshots:
       is-glob: 4.0.3
       semver: 7.5.4
       ts-api-utils: 1.0.3(typescript@4.9.5)
+    optionalDependencies:
       typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
@@ -1107,6 +1121,8 @@ snapshots:
 
   node-addon-api@1.7.2: {}
 
+  node-addon-api@8.1.0: {}
+
   once@1.4.0:
     dependencies:
       wrappy: 1.0.2
@@ -1228,6 +1244,10 @@ snapshots:
   undici@5.27.0:
     dependencies:
       '@fastify/busboy': 2.0.0
+
+  unplayplay@1.0.0:
+    dependencies:
+      node-addon-api: 8.1.0
 
   uri-js@4.4.1:
     dependencies:
