@@ -7,7 +7,7 @@ const PLAYPLAY_TOKEN = Buffer.from('01e132cae527bd21620e822f58514932', 'hex')
 
 export default class PlayPlayClient {
 	init = false
-	licenseRequest: PlayPlayLicenseResponse = new PlayPlayLicenseResponse()
+	licenseRequest: PlayPlayLicenseRequest = new PlayPlayLicenseRequest()
 	licenseResponse: PlayPlayLicenseResponse = new PlayPlayLicenseResponse()
 
     #librespot: Librespot
