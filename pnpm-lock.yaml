@@ -21,8 +21,8 @@ importers:
         specifier: ^5.27.0
         version: 5.27.0
       unplayplay:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2
+        version: 1.0.2
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.9.1
@@ -629,8 +629,8 @@ packages:
     resolution: {integrity: sha512-l3ydWhlhOJzMVOYkymLykcRRXqbUaQriERtR70B9LzNkZ4bX52Fc8wbTDneMiwo8T+AemZXvXaTx+9o5ROxrXg==}
     engines: {node: '>=14.0'}
 
-  unplayplay@1.0.1:
-    resolution: {integrity: sha512-n9GC445z1V2ar4467bg0CFWTZasjFgRupw6MV7Ol2oa1Drudl2YvIhJypl9laHgITJIll9zQN5ItjPkor71kWw==}
+  unplayplay@1.0.2:
+    resolution: {integrity: sha512-93aGwcNPyWpIhro6HCWqtWZ0mlurpcpVU2ODSYZCI1PhWGKrJfe7oOF4AKVuVK74YFLYlW3JVzl6Vw1Bck2Vpg==}
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -1245,7 +1245,7 @@ snapshots:
     dependencies:
       '@fastify/busboy': 2.0.0
 
-  unplayplay@1.0.1:
+  unplayplay@1.0.2:
     dependencies:
       node-addon-api: 8.1.0
 
