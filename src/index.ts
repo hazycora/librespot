@@ -89,6 +89,15 @@ export default class Librespot {
 		if (await (this.isPremium())) this.maxQuality = 2
 	}
 
+	getStoredCredentials() {
+		const refresh = this.login5?.refreshCredentials 
+		if (!refresh) throw new Error('Not logged in')
+		return {
+			username: refresh.username,
+			storedCredential: refresh.stored_credential!.toString()
+		}
+	}
+
 	async relogin() {
 		if (!this.credentials) throw new Error('No credentials')
 		return await this.setupSession(this.credentials)
