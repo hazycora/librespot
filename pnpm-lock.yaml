@@ -8,15 +8,9 @@ importers:
 
   .:
     dependencies:
-      fast-xml-parser:
-        specifier: ^4.3.2
-        version: 4.3.2
       protobufjs:
         specifier: ^7.2.5
         version: 7.2.5
-      shannon-bindings:
-        specifier: ^0.1.0
-        version: 0.1.0
       undici:
         specifier: ^5.27.0
         version: 5.27.0
@@ -337,10 +331,6 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
-  fast-xml-parser@4.3.2:
-    resolution: {integrity: sha512-rmrXUXwbJedoXkStenj1kkljNF7ugn5ZjR9FJcwmCfcCbtOMDghPajbc+Tck6vE6F5XsDmx+Pr2le9fw8+pXBg==}
-    hasBin: true
-
   fastq@1.15.0:
     resolution: {integrity: sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==}
 
@@ -480,9 +470,6 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  node-addon-api@1.7.2:
-    resolution: {integrity: sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==}
-
   node-addon-api@8.1.0:
     resolution: {integrity: sha512-yBY+qqWSv3dWKGODD6OGE6GnTX7Q2r+4+DfpqxHSHh8x0B4EKP9+wVGLS6U/AM1vxSNNmUEuIV5EGhYwPpfOwQ==}
     engines: {node: ^18 || ^20 || >= 21}
@@ -566,9 +553,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  shannon-bindings@0.1.0:
-    resolution: {integrity: sha512-svz5ewuAGfrxibOe5GVfPfvjs8FwHEixTW2K3cUEDDt6tCnxTsFzqi0JoQ//45EGYoxxjX2uES3msWE41XVaIQ==}
-
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -588,9 +572,6 @@ packages:
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
-
-  strnum@1.0.5:
-    resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -980,10 +961,6 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
-  fast-xml-parser@4.3.2:
-    dependencies:
-      strnum: 1.0.5
-
   fastq@1.15.0:
     dependencies:
       reusify: 1.0.4
@@ -1119,8 +1096,6 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  node-addon-api@1.7.2: {}
-
   node-addon-api@8.1.0: {}
 
   once@1.4.0:
@@ -1197,10 +1172,6 @@ snapshots:
     dependencies:
       lru-cache: 6.0.0
 
-  shannon-bindings@0.1.0:
-    dependencies:
-      node-addon-api: 1.7.2
-
   shebang-command@2.0.0:
     dependencies:
       shebang-regex: 3.0.0
@@ -1214,8 +1185,6 @@ snapshots:
       ansi-regex: 5.0.1
 
   strip-json-comments@3.1.1: {}
-
-  strnum@1.0.5: {}
 
   supports-color@7.2.0:
     dependencies:

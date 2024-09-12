@@ -1,14 +1,13 @@
 import { fetch, Request, RequestInit, Response } from 'undici'
 import { getRandomSpclient } from './utils/getService.js'
 import timeout from './utils/timeout.js'
-import LibrespotSession from './session/index.js'
 import LibrespotBrowse from './browse.js'
 import LibrespotGet from './get.js'
 import LibrespotPlayer from './player.js'
 import { randomBytes } from 'crypto'
-import { LibrespotSessionOptions, QualityOption } from './utils/types.js'
+import { QualityOption } from './utils/types.js'
 import { PagedResponse } from './utils/rawtypes.js'
-import Login5Client, { Login5Credentials } from './session/login5.js'
+import Login5Client, { Login5Credentials } from './login5.js'
 import PlayPlayClient from './playplay.js'
 
 class LibrespotToken {
@@ -28,19 +27,15 @@ class LibrespotToken {
 export interface LibrespotOptions {
 	clientId?: string
 	deviceId?: string
-	sessionOptions?: Partial<LibrespotSessionOptions>
 }
 
 export default class Librespot {
 	options: LibrespotOptions
-	session?: LibrespotSession
 	login5?: Login5Client
 	credentials?: Login5Credentials
 	token?: LibrespotToken
 	deviceId: string
 	spclient?: string
-	keySequence: number = 0
-	sessionOptions: LibrespotSessionOptions
 	maxQuality: QualityOption = 1
 	premium?: boolean
 
@@ -49,15 +44,8 @@ export default class Librespot {
 			clientId: '9a8d2f0ce77a4e248bb71fefcb557637',
 			...options
 		}
-		this.keySequence = 0
-		this.session = undefined
 		this.deviceId = options.deviceId ?? randomBytes(8).toString('hex')
 		this.options = options
-
-		this.sessionOptions = {
-			deviceId: this.deviceId,
-			...(options.sessionOptions ?? {})
-		}
 	}
 
 	async login(username: string, password: string) {
@@ -80,11 +68,6 @@ export default class Librespot {
 		this.spclient = await getRandomSpclient()
 		this.login5 = new Login5Client(this.options.clientId!, this.deviceId)
 		const loginResponse = await this.login5.login(credentials)
-		this.session = new LibrespotSession(this.sessionOptions)
-		await this.session.setup(
-			loginResponse.username,
-			loginResponse.storedCredential
-		)
 		this.token = new LibrespotToken(loginResponse)
 		if (await (this.isPremium())) this.maxQuality = 2
 	}
@@ -103,16 +86,6 @@ export default class Librespot {
 		return await this.setupSession(this.credentials)
 	}
 
-	async disconnect() {
-		if (!this.session) return
-		return this.session.close()
-	}
-
-	getAttribute(attribute: string): string | number {
-		if (!this.session) throw new Error('Not logged in')
-		return this.session.attributes[attribute]
-	}
-
 	async isPremium() {
 		if (typeof this.premium == 'boolean') return this.premium
 		const check = (await this.get.me()).plan == 'premium'
@@ -121,7 +94,7 @@ export default class Librespot {
 	}
 
 	async getToken(): Promise<LibrespotToken> {
-		if (!this.session) throw new Error('Not logged in')
+		if (!(this.login5?.refreshCredentials)) throw new Error('Not logged in')
 		if (this.token && !this.token.isExpired()) {
 			return this.token
 		}

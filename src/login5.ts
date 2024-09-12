@@ -1,5 +1,5 @@
-import LoginRequest from '../messages/LoginRequest.js'
-import LoginResponse from '../messages/LoginResponse.js'
+import LoginRequest from './messages/LoginRequest.js'
+import LoginResponse from './messages/LoginResponse.js'
 
 const URL = 'https://login5.spotify.com/v3/login'
 

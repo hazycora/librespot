@@ -1,16 +1,5 @@
 export type QualityOption = 0 | 1 | 2
 
-export interface HandshakeOptions {
-	product?: number
-	productFlags?: number[]
-	platform?: number
-}
-export interface LibrespotSessionOptions {
-	deviceId: string
-	address?: string
-	port?: number
-	handshakeOptions?: HandshakeOptions
-}
 export interface SpotifyObject {
 	id: string
 	uri: string
