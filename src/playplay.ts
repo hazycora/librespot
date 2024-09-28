@@ -3,7 +3,7 @@ import Librespot from './index.js'
 import PlayPlayLicenseRequest from './messages/PlayPlayLicenseRequest.js'
 import PlayPlayLicenseResponse from './messages/PlayPlayLicenseResponse.js'
 
-const PLAYPLAY_TOKEN = Buffer.from('01e132cae527bd21620e822f58514932', 'hex')
+const PLAYPLAY_TOKEN = Buffer.from('0140167f71d3960528154b12774434d0', 'hex')
 
 export default class PlayPlayClient {
 	init = false
