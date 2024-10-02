@@ -1,9 +1,7 @@
-import deobfuscateKey from 'unplayplay'
+import { deobfuscateKey, token as playplayToken } from 'unplayplay'
 import Librespot from './index.js'
 import PlayPlayLicenseRequest from './messages/PlayPlayLicenseRequest.js'
 import PlayPlayLicenseResponse from './messages/PlayPlayLicenseResponse.js'
-
-const PLAYPLAY_TOKEN = Buffer.from('0140167f71d3960528154b12774434d0', 'hex')
 
 export default class PlayPlayClient {
 	init = false
@@ -19,7 +17,7 @@ export default class PlayPlayClient {
 	async getAudioKey(fileId: string, contentType: number) {
 		const params = {
             version: 2,
-            token: PLAYPLAY_TOKEN,
+            token: playplayToken,
             interactivity: 1,
             content_type: contentType,
         }
