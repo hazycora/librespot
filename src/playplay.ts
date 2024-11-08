@@ -40,9 +40,9 @@ export default class PlayPlayClient {
         const url = `/playplay/v1/key/${fileId}`
 		const resp = await this.#librespot.fetchWithAuth(url, { method: 'POST', body: encodedRequest, headers: {
 			'accept-language': 'en-US',
-            'spotify-app-version': '8.9.66.543',
+            'spotify-app-version': '8.9.86.551',
 			'app-platform': 'Android',
-			'user-agent': 'Spotify/8.9.66.543 Android/34 (sdk_gphone64_x86_64)',
+			'user-agent': 'Spotify/8.9.86.551 Android/34 (sdk_gphone64_x86_64)',
             'content-type': 'text/plain'
 		} })
 		this.licenseResponse.from(Buffer.from(await resp.arrayBuffer()))

@@ -15,8 +15,8 @@ importers:
         specifier: ^5.27.0
         version: 5.27.0
       unplayplay:
-        specifier: ^1.0.4
-        version: 1.0.4
+        specifier: ^1.0.5
+        version: 1.0.5
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.9.1
@@ -470,8 +470,8 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  node-addon-api@8.1.0:
-    resolution: {integrity: sha512-yBY+qqWSv3dWKGODD6OGE6GnTX7Q2r+4+DfpqxHSHh8x0B4EKP9+wVGLS6U/AM1vxSNNmUEuIV5EGhYwPpfOwQ==}
+  node-addon-api@8.2.2:
+    resolution: {integrity: sha512-9emqXAKhVoNrQ792nLI/wpzPpJ/bj/YXxW0CvAau1+RdGBcCRF1Dmz7719zgVsQNrzHl9Tzn3ImZ4qWFarWL0A==}
     engines: {node: ^18 || ^20 || >= 21}
 
   once@1.4.0:
@@ -610,8 +610,8 @@ packages:
     resolution: {integrity: sha512-l3ydWhlhOJzMVOYkymLykcRRXqbUaQriERtR70B9LzNkZ4bX52Fc8wbTDneMiwo8T+AemZXvXaTx+9o5ROxrXg==}
     engines: {node: '>=14.0'}
 
-  unplayplay@1.0.4:
-    resolution: {integrity: sha512-/4ThKfgaYqisrlrsHEEY14o3/FTPTWRY3mUXFJiGjdBcgJ1fH4tBzPiuK9JhIFgRKtOYb7IMefri1hKePynPpA==}
+  unplayplay@1.0.5:
+    resolution: {integrity: sha512-dm0SpnZ3wu8+Ref4B/omGYGLtUAVs5gCu8q1rv1CV7tLyO21A+Unt1dM7qVim7NI27tS1w6OBusp71glXYmyiw==}
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -1096,7 +1096,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  node-addon-api@8.1.0: {}
+  node-addon-api@8.2.2: {}
 
   once@1.4.0:
     dependencies:
@@ -1214,9 +1214,9 @@ snapshots:
     dependencies:
       '@fastify/busboy': 2.0.0
 
-  unplayplay@1.0.4:
+  unplayplay@1.0.5:
     dependencies:
-      node-addon-api: 8.1.0
+      node-addon-api: 8.2.2
 
   uri-js@4.4.1:
     dependencies:

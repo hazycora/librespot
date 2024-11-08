@@ -82,14 +82,33 @@ message ChallengeSolution {
     }
 }
 
+message Finish {
+    int32 unknown1 = 1;
+    string uri = 2;
+    string nonce = 3;
+    int32 unknown2 = 4;
+}
+
+message Hint {
+    string ui_locales = 1;
+}
+
+message Interaction {
+    string unknown = 1;
+    Finish finish = 2;
+    Hint hint = 3;
+}
+
 message LoginRequest {
     ClientInfo client_info = 1;
     bytes login_context = 2;
     ChallengeSolutions challenge_solutions = 3;
+    Interaction interaction = 4;
     
     oneof login_method {
         StoredCredential stored_credential = 100;
         Password password = 101;
+        Password password_v4 = 109;
     }
 }
 

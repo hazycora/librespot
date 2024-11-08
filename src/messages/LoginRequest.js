@@ -17,9 +17,9 @@ export default class LoginRequest extends Message {
 		}
 		if (params.credentials) {
 			if (params.credentials.password) {
-				this.payload.password = {
+				this.payload.passwordV4 = {
 					id: params.credentials.username,
-					password: params.credentials.password
+					password: params.credentials.password,
 				}
 			} else {
 				this.payload.storedCredential = {
@@ -39,6 +39,20 @@ export default class LoginRequest extends Message {
 			}
 			this.payload.challengeSolutions = {
 				solutions
+			}
+		}
+		if (params.interaction) {
+			this.payload.interaction = {
+				finish: {
+					unknown1: 1,
+					uri: params.interaction.uri,
+					nonce: params.interaction.nonce,
+					unknown2: 1,
+				},
+				hint: {
+					uiLocales: params.interaction.ui_locales
+				},
+				unknown: '\x01'
 			}
 		}
 	}
