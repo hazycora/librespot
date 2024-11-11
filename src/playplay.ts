@@ -1,7 +1,11 @@
-import { deobfuscateKey, token as playplayToken } from 'unplayplay'
 import Librespot from './index.js'
 import PlayPlayLicenseRequest from './messages/PlayPlayLicenseRequest.js'
 import PlayPlayLicenseResponse from './messages/PlayPlayLicenseResponse.js'
+
+export interface Unplayplay {
+	deobfuscateKey(fileId: Buffer, obfuscatedKey: Buffer): Buffer,
+	token: Uint8Array,
+}
 
 export default class PlayPlayClient {
 	init = false
@@ -9,21 +13,27 @@ export default class PlayPlayClient {
 	licenseResponse: PlayPlayLicenseResponse = new PlayPlayLicenseResponse()
 
     #librespot: Librespot
+	#unplayplay?: Unplayplay
 
-	constructor(librespot: Librespot) {
+	constructor(librespot: Librespot, unplayplay?: Unplayplay) {
 		this.#librespot = librespot
+		this.#unplayplay = unplayplay
 	}
 
 	async getAudioKey(fileId: string, contentType: number) {
+		if (!this.#unplayplay) {
+			throw new Error('Playplay decryptor not specified, cannot decrypt')
+		}
+
 		const params = {
             version: 2,
-            token: playplayToken,
+            token: this.#unplayplay.token,
             interactivity: 1,
             content_type: contentType,
         }
 
         const response = await this.call(fileId, params)
-        const key = deobfuscateKey(Buffer.from(fileId, 'hex'), response.obfuscatedKey)
+        const key = this.#unplayplay.deobfuscateKey(Buffer.from(fileId, 'hex'), response.obfuscatedKey)
         return key
 	}
 

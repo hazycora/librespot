@@ -8,7 +8,7 @@ import { randomBytes } from 'crypto'
 import { QualityOption } from './utils/types.js'
 import { PagedResponse } from './utils/rawtypes.js'
 import Login5Client, { Login5Credentials } from './login5.js'
-import PlayPlayClient from './playplay.js'
+import PlayPlayClient, { Unplayplay } from './playplay.js'
 
 class LibrespotToken {
 	accessToken: string
@@ -27,11 +27,13 @@ class LibrespotToken {
 export interface LibrespotOptions {
 	clientId?: string
 	deviceId?: string
+	unplayplay?: Unplayplay
 }
 
 export default class Librespot {
 	options: LibrespotOptions
 	login5?: Login5Client
+	playplay: PlayPlayClient
 	credentials?: Login5Credentials
 	token?: LibrespotToken
 	deviceId: string
@@ -46,6 +48,8 @@ export default class Librespot {
 		}
 		this.deviceId = options.deviceId ?? randomBytes(8).toString('hex')
 		this.options = options
+
+		this.playplay = new PlayPlayClient(this, this.options.unplayplay)
 	}
 
 	async login(username: string, password: string) {
@@ -157,6 +161,4 @@ export default class Librespot {
 	get = new LibrespotGet(this)
 
 	player = new LibrespotPlayer(this)
-
-	playplay = new PlayPlayClient(this)
 }
